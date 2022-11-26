@@ -1,4 +1,4 @@
-enum TokenType {
+export enum TokenType {
     NUMBER,
     IDENTIFIER,
     PLUS,
@@ -12,7 +12,7 @@ enum TokenType {
     EOF,
 }
 
-class Token {
+export class Token {
     constructor(
         public type: TokenType,
         public value: string | undefined,
@@ -94,7 +94,7 @@ function isNumber(str: string): boolean {
 }
 
 function isAlpha(str: string): boolean {
-    return str.toLocaleLowerCase() >= "a" && str.toLocaleLowerCase() <= "z" || str == "_"
+    return str?.toLocaleLowerCase() >= "a" && str?.toLocaleLowerCase() <= "z" || str == "_"
 }
 
 function isShippable(str: string): boolean {
