@@ -1,6 +1,6 @@
-import { tokenize } from "./lexer.ts";
-import { Parser } from "./parser.ts";
-import compile from "./compiler.ts";
+import { tokenize } from "~/lexer/lexer.ts";
+import { Parser } from "~/parser/parser.ts";
+import compile from "~/compiler/compiler.ts";
 
 const tokens = tokenize("(1+2)*3")
 const ast = new Parser(tokens).getAST()

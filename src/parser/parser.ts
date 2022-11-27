@@ -1,46 +1,16 @@
-import { Token, TokenType } from "./lexer.ts"
-
-export enum NodeType {
-    NUMBER,
-    IDENTIFIER,
-    BINARY_EXPRESSION,
-}
-
-export class Statement {
-    constructor(
-        public kind: NodeType
-    ) {}
-}
-
-export class Expression extends Statement {
-    constructor(
-        public kind: NodeType,
-        public symbol: string|undefined,
-    ) {
-        super(kind)
-    }
-}
-
-export class BinaryExpression extends Statement {
-    constructor(
-        public operation: Token,
-        public left: Statement,
-        public right: Statement,
-    ) {
-        super(NodeType.BINARY_EXPRESSION)
-    }
-}
+import { Token, TokenType } from "~/lexer/lexer-types.ts"
+import { NodeType, Statement, BinaryExpression, Numerical, Identifier, Program } from "~/parser/parser-types.ts"
 
 export class Parser {
     constructor(
         private tokens: Token[]
     ) {}
 
-    getAST(): Statement[] {
-        const program: Statement[] = []
+    getAST(): Program {
+        const program = new Program()
 
         while(this.at().type != TokenType.EOF) {            
-            program.push(this.parseStatement())
+            program.body.push(this.parseStatement())
         }
 
         return program
@@ -81,10 +51,10 @@ export class Parser {
 
         switch(token.type) {
             case TokenType.NUMBER: {
-                return new Expression(NodeType.NUMBER, this.eat().value)
+                return new Numerical(NodeType.NUMBER, parseInt(this.eat().value ?? ""))
             }
             case TokenType.IDENTIFIER: {
-                return new Expression(NodeType.IDENTIFIER, this.eat().value)
+                return new Identifier(NodeType.IDENTIFIER, this.eat().value)
             }
             case TokenType.OPEN_PAREN: {
                 this.eat()

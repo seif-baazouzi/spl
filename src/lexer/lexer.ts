@@ -1,23 +1,5 @@
-export enum TokenType {
-    NUMBER,
-    IDENTIFIER,
-    PLUS,
-    MINUS,
-    MULTIPLY,
-    DIVIDE,
-    MODULO,
-    EQUAL,
-    OPEN_PAREN,
-    CLOSE_PAREN,
-    EOF,
-}
-
-export class Token {
-    constructor(
-        public type: TokenType,
-        public value: string | undefined,
-    ) { }
-}
+import { TokenType, Token } from "~/lexer/lexer-types.ts"
+import { isAlpha, isNumber, isShippable } from "~/lexer/lexer-helpers.ts"
 
 export function tokenize(sourceCode: string): Token[] {
     const tokens: Token[] = []
@@ -87,16 +69,4 @@ export function tokenize(sourceCode: string): Token[] {
 
     tokens.push(new Token(TokenType.EOF, "EOF"))
     return tokens;
-}
-
-function isNumber(str: string): boolean {
-    return str >= "0" && str <= "9"
-}
-
-function isAlpha(str: string): boolean {
-    return str?.toLocaleLowerCase() >= "a" && str?.toLocaleLowerCase() <= "z" || str == "_"
-}
-
-function isShippable(str: string): boolean {
-    return str == " " || str == "\t"
 }
