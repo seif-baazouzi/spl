@@ -1,18 +1,18 @@
 import { Token, TokenType } from "./lexer.ts"
 
-enum NodeType {
+export enum NodeType {
     NUMBER,
     IDENTIFIER,
     BINARY_EXPRESSION,
 }
 
-class Statement {
+export class Statement {
     constructor(
         public kind: NodeType
     ) {}
 }
 
-class Expression extends Statement {
+export class Expression extends Statement {
     constructor(
         public kind: NodeType,
         public symbol: string|undefined,
@@ -21,7 +21,7 @@ class Expression extends Statement {
     }
 }
 
-class BinaryExpression extends Statement {
+export class BinaryExpression extends Statement {
     constructor(
         public operation: Token,
         public left: Statement,

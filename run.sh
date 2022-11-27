@@ -1,3 +1,3 @@
 #!/bin/bash
 
-deno run src/main.ts
+deno run --allow-run --allow-write src/main.ts
