@@ -9,8 +9,9 @@ export class Parser {
     getAST(): Program {
         const program = new Program()
 
-        while(this.at().type != TokenType.EOF) {            
+        while(this.at().type != TokenType.EOF) {    
             program.body.push(this.parseStatement())
+            if(this.at().type == TokenType.END_LINE) this.eat()        
         }
 
         return program

@@ -9,6 +9,7 @@ export enum TokenType {
     EQUAL,
     OPEN_PAREN,
     CLOSE_PAREN,
+    END_LINE,
     EOF,
 
     DUMP,

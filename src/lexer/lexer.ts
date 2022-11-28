@@ -38,7 +38,12 @@ export function tokenize(sourceCode: string): Token[] {
             case "%": {
                 tokens.push(new Token(TokenType.MODULO, code.shift()))
                 break
-            } default: {
+            }
+            case "\n": case ";": {
+                tokens.push(new Token(TokenType.END_LINE, code.shift()))
+                break
+            }
+            default: {
                 if (isNumber(code[0])) {
                     let number = ""
                     while (isNumber(code[0])) {
