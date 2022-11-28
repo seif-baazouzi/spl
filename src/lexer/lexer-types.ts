@@ -10,6 +10,8 @@ export enum TokenType {
     OPEN_PAREN,
     CLOSE_PAREN,
     EOF,
+
+    DUMP,
 }
 
 export class Token {

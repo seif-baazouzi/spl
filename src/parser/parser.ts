@@ -1,5 +1,5 @@
 import { Token, TokenType } from "~/lexer/lexer-types.ts"
-import { NodeType, Statement, BinaryExpression, Numerical, Identifier, Program } from "~/parser/parser-types.ts"
+import { NodeType, Statement, BinaryExpression, Numerical, Identifier, Program, Expression, DumpStatement } from "~/parser/parser-types.ts"
 
 export class Parser {
     constructor(
@@ -17,10 +17,23 @@ export class Parser {
     }
 
     parseStatement(): Statement {
-        return this.parseAddingStatement()   
+        switch(this.at().type) {
+            case TokenType.DUMP: {
+                this.eat()
+                const expression = this.parseExpression()
+                return new DumpStatement(expression)
+            }
+            default: {
+                return this.parseAddingStatement()   
+            } 
+        } 
     }
     
-    parseAddingStatement(): Statement {
+    parseExpression(): Expression {
+        return this.parseAddingStatement()
+    }
+
+    parseAddingStatement(): Expression {
         let left: Statement = this.parseMultiplyingStatement()
         
         while(this.at().type === TokenType.PLUS || this.at().type === TokenType.MINUS) {
@@ -33,7 +46,7 @@ export class Parser {
         return left
     }
 
-    parseMultiplyingStatement(): Statement {
+    parseMultiplyingStatement(): Expression {
         let left: Statement = this.parsePrimary()
 
         while(this.at().type === TokenType.MULTIPLY || this.at().type === TokenType.DIVIDE || this.at().type === TokenType.MODULO) {
@@ -46,7 +59,7 @@ export class Parser {
         return left
     }
     
-    parsePrimary(): Statement {
+    parsePrimary(): Expression {
         const token = this.at()
 
         switch(token.type) {

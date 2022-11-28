@@ -2,6 +2,7 @@ import { Token } from "~/lexer/lexer-types.ts"
 
 export enum NodeType {
     PROGRAM,
+    DUMP,
     NUMBER,
     IDENTIFIER,
     BINARY_EXPRESSION,
@@ -27,6 +28,12 @@ export class Expression extends Statement {
         public kind: NodeType,
     ) {
         super(kind)
+    }
+}
+
+export class DumpStatement extends Statement {    
+    constructor(public expression: Expression) {
+        super(NodeType.DUMP)
     }
 }
 

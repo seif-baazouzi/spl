@@ -5,4 +5,5 @@ import compile from "~/compiler/compiler.ts";
 
 const tokens = tokenize(readSourceCode())
 const ast = new Parser(tokens).getAST()
+
 compile(ast)
