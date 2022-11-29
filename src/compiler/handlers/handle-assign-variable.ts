@@ -4,10 +4,15 @@ import { Environment } from "~/compiler/compiler-types.ts";
 
 export default function handleAssignVariable(statement: AssignVariable, env: Environment) {
     if(!env.hasVariable(statement.name)) {
-        console.log(`Error: Variable ${statement.name} is not defined`)
+        console.log(`Error: Variable ${statement.name} is not defined!`)
         Deno.exit()
     }
     
+    if(env.isConstant(statement.name)) {
+        console.log(`Error: Can not reassign constant ${statement.name}!`)
+        Deno.exit()
+    }
+
     const variable = env.getVariable(statement.name)
 
     return [

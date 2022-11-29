@@ -1,3 +1,5 @@
+import { DeclareVariable } from "../parser/parser-types.ts";
+
 export enum VariablesTypes {
     NUMBER,
 }
@@ -12,16 +14,19 @@ export class Variable {
 export class Environment {
     private index = 0;
     private variables: Map<string, Variable> = new Map()
+    private constants: Set<string> = new Set()
 
     constructor(private parent?: Environment) {}
     
-    declareVariable(variableName: string): number {
-        if(this.hasVariable(variableName)) {
-            console.log(`Error: Variable ${variableName} is already declared!`)
+    declareVariable(st: DeclareVariable): number {
+        if(this.hasVariable(st.name)) {
+            console.log(`Error: Variable ${st.name} is already declared!`)
             Deno.exit(1)
         }
 
-        this.variables.set(variableName, new Variable(this.index, VariablesTypes.NUMBER))
+        if(st.isConstant) this.constants.add(st.name)
+
+        this.variables.set(st.name, new Variable(this.index, VariablesTypes.NUMBER))
         return this.index++
     }
 
@@ -44,6 +49,10 @@ export class Environment {
         }
 
         return false
+    }
+
+    isConstant(constantName: string): boolean {
+        return this.constants.has(constantName)
     }
 
     getVariablesCount(): number {

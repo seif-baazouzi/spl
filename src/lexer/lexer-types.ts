@@ -17,6 +17,7 @@ export enum TokenType {
     EOF,
 
     LET,
+    CONST,
     DUMP,
 }
 

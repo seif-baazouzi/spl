@@ -20,15 +20,23 @@ export class Parser {
     parseStatement(): Statement {
         switch(this.at().type) {
             case TokenType.LET: {
-                this.eat()
+                this.eat() // eat let keyword
                 const variableName = this.expect(TokenType.IDENTIFIER, "Expected variable name after let keyword").value as string             
                 if(this.at().type == TokenType.EQUAL) {
-                    this.eat()
+                    this.eat() // eat =
                     const expression = this.parseExpression()
-                    return new DeclareVariable(variableName, expression)
+                    return new DeclareVariable(variableName, false, expression)
                 } else {
                     return new DeclareVariable(variableName)
                 }
+            }
+            case TokenType.CONST: {
+                this.eat() // eat const keyword
+                const variableName = this.expect(TokenType.IDENTIFIER, "Expected constant name after const keyword").value as string             
+                this.expect(TokenType.EQUAL, "Expected equals sign after constant name").value as string             
+                
+                const expression = this.parseExpression()
+                return new DeclareVariable(variableName, true, expression)
             }
             case TokenType.IDENTIFIER: {                
                 if(this.next().type != TokenType.EQUAL) {
@@ -42,7 +50,7 @@ export class Parser {
                 return new AssignVariable(variableName, expression)
             }
             case TokenType.DUMP: {
-                this.eat()
+                this.eat() // eat dump keyword
                 const expression = this.parseExpression()
                 return new DumpStatement(expression)
             }

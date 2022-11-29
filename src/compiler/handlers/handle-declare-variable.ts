@@ -5,7 +5,7 @@ import { Environment } from "~/compiler/compiler-types.ts"
 export default function handleDeclareVariable(statement: DeclareVariable, env: Environment): string {
     const result: string[] = []
 
-    const index = env.declareVariable(statement.name)
+    const index = env.declareVariable(statement)
     
     if (statement.expression) {
         result.push(handleExpression(statement.expression, env))

@@ -40,7 +40,7 @@ export class DumpStatement extends Statement {
 }
 
 export class DeclareVariable extends Statement {    
-    constructor(public name: string, public expression?: Expression) {
+    constructor(public name: string, public isConstant: boolean = false, public expression?: Expression) {
         super(NodeType.DECLARE_VARIABLE)
     }
 }

@@ -23,6 +23,10 @@ export function handlerAlpha(code: string[], tokens: Token[]) {
             tokens.push(new Token(TokenType.LET, alpha))
             break
         }
+        case "const": {
+            tokens.push(new Token(TokenType.CONST, alpha))
+            break
+        }
         case "dump": {
             tokens.push(new Token(TokenType.DUMP, alpha))
             break
