@@ -14,9 +14,15 @@ export default function handleAssignVariable(statement: AssignVariable, env: Env
     }
 
     const variable = env.getVariable(statement.name)
+    const expression = handleExpression(statement.expression, env)
+
+    if(variable.type != expression.type) {
+        console.log(`Error: Can not reassign variable ${statement.name} to a different type expression!`)
+        Deno.exit()
+    }
 
     return [
-        handleExpression(statement.expression, env),
+        expression.assembly,
         `mov [ebp+${variable.index*4}], eax`
     ].join("\n")
 }

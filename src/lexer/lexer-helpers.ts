@@ -27,6 +27,14 @@ export function handlerAlpha(code: string[], tokens: Token[]) {
             tokens.push(new Token(TokenType.CONST, alpha))
             break
         }
+        case "true": {
+            tokens.push(new Token(TokenType.TRUE, alpha))
+            break
+        }
+        case "false": {
+            tokens.push(new Token(TokenType.FALSE, alpha))
+            break
+        }
         case "dump": {
             tokens.push(new Token(TokenType.DUMP, alpha))
             break

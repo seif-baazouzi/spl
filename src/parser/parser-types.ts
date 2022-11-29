@@ -4,10 +4,18 @@ export enum NodeType {
     PROGRAM,
     DUMP,
     NUMBER,
+    BOOLEAN,
     IDENTIFIER,
     BINARY_EXPRESSION,
     DECLARE_VARIABLE,
     ASSIGN_VARIABLE,
+    VARIABLE_TYPE,
+}
+
+export enum VariableType {
+    NUMBER,
+    BOOLEAN,
+    CONSTANT,
 }
 
 export class Statement {
@@ -40,7 +48,7 @@ export class DumpStatement extends Statement {
 }
 
 export class DeclareVariable extends Statement {    
-    constructor(public name: string, public isConstant: boolean = false, public expression?: Expression) {
+    constructor(public name: string, public isConstant: boolean = false, public type: VariableType, public expression?: Expression) {
         super(NodeType.DECLARE_VARIABLE)
     }
 }
@@ -76,5 +84,13 @@ export class Numerical extends Expression {
         public value: number,
     ) {
         super(kind)
+    }
+}
+
+export class Boolean extends Expression {
+    constructor(
+        public value: boolean,
+    ) {
+        super(NodeType.BOOLEAN)
     }
 }

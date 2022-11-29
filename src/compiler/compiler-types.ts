@@ -1,14 +1,15 @@
-import { DeclareVariable } from "../parser/parser-types.ts";
-
-export enum VariablesTypes {
-    NUMBER,
-}
+import { DeclareVariable, VariableType } from "~/parser/parser-types.ts";
 
 export class Variable {
     constructor(
         public index: number,
-        public type: VariablesTypes,
+        public type: VariableType,
     ) {}
+}
+
+export interface ExpressionValue {
+    type: VariableType,
+    assembly: string,
 }
 
 export class Environment {
@@ -26,7 +27,7 @@ export class Environment {
 
         if(st.isConstant) this.constants.add(st.name)
 
-        this.variables.set(st.name, new Variable(this.index, VariablesTypes.NUMBER))
+        this.variables.set(st.name, new Variable(this.index, st.type))
         return this.index++
     }
 

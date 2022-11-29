@@ -1,0 +1,5 @@
+let x: number = 1+2
+dump x
+
+let y: bool = true
+dump y

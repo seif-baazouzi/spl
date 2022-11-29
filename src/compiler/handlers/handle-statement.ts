@@ -16,7 +16,7 @@ export function handleStatement(statement: Statement, env: Environment): string 
         }
         case NodeType.DUMP: {
             const st = statement as DumpStatement
-            const expression = handleExpression(st.expression, env)
+            const expression = handleExpression(st.expression, env).assembly
             return [
                 expression,
                 "push eax",
@@ -25,7 +25,7 @@ export function handleStatement(statement: Statement, env: Environment): string 
         }
         default: {
             const st = statement as Expression
-            return handleExpression(st, env)
+            return handleExpression(st, env).assembly
         }
     }
 }

@@ -39,6 +39,10 @@ export function tokenize(sourceCode: string): Token[] {
                 tokens.push(new Token(TokenType.MODULO, code.shift()))
                 break
             }
+            case ":": {
+                tokens.push(new Token(TokenType.COLON, code.shift()))
+                break
+            }
             case "\n": case ";": {
                 tokens.push(new Token(TokenType.END_LINE, code.shift()))
                 break

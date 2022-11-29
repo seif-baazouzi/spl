@@ -1,5 +1,6 @@
 import { Token, TokenType } from "~/lexer/lexer-types.ts"
-import { NodeType, Statement, BinaryExpression, Numerical, Identifier, Program, Expression, DumpStatement, DeclareVariable, AssignVariable } from "~/parser/parser-types.ts"
+import { NodeType, Statement, BinaryExpression, Numerical, Identifier, Program, Expression, DumpStatement, DeclareVariable, AssignVariable, Boolean, VariableType } from "~/parser/parser-types.ts"
+import { getVariableType } from "./parser-helpers.ts"
 
 export class Parser {
     constructor(
@@ -9,7 +10,7 @@ export class Parser {
     getAST(): Program {
         const program = new Program()
 
-        while(this.at().type != TokenType.EOF) {    
+        while(this.at().type != TokenType.EOF) {
             program.body.push(this.parseStatement())
             if(this.at().type == TokenType.END_LINE) this.eat()        
         }
@@ -21,13 +22,17 @@ export class Parser {
         switch(this.at().type) {
             case TokenType.LET: {
                 this.eat() // eat let keyword
-                const variableName = this.expect(TokenType.IDENTIFIER, "Expected variable name after let keyword").value as string             
+                const variableName = this.expect(TokenType.IDENTIFIER, "Expected variable name after let keyword").value as string            
+                
+                this.expect(TokenType.COLON, "Expected colon after variable name!")                
+                const variableType = this.expect(TokenType.IDENTIFIER, "Expected variable type and variable name!").value as string
+                
                 if(this.at().type == TokenType.EQUAL) {
                     this.eat() // eat =
                     const expression = this.parseExpression()
-                    return new DeclareVariable(variableName, false, expression)
+                    return new DeclareVariable(variableName, false, getVariableType(variableType), expression)
                 } else {
-                    return new DeclareVariable(variableName)
+                    return new DeclareVariable(variableName, false, getVariableType(variableType))
                 }
             }
             case TokenType.CONST: {
@@ -36,7 +41,7 @@ export class Parser {
                 this.expect(TokenType.EQUAL, "Expected equals sign after constant name").value as string             
                 
                 const expression = this.parseExpression()
-                return new DeclareVariable(variableName, true, expression)
+                return new DeclareVariable(variableName, true, VariableType.CONSTANT, expression)
             }
             case TokenType.IDENTIFIER: {                
                 if(this.next().type != TokenType.EQUAL) {
@@ -100,6 +105,14 @@ export class Parser {
         switch(token.type) {
             case TokenType.NUMBER: {
                 return new Numerical(NodeType.NUMBER, parseInt(this.eat().value ?? ""))
+            }
+            case TokenType.TRUE: {
+                this.eat() // eat true
+                return new Boolean(true)
+            }
+            case TokenType.FALSE: {
+                this.eat() // eat false
+                return new Boolean(false)
             }
             case TokenType.IDENTIFIER: {
                 return new Identifier(NodeType.IDENTIFIER, this.eat().value as string)

@@ -16,6 +16,11 @@ export enum TokenType {
     END_LINE,
     EOF,
 
+    COLON,
+
+    TRUE,
+    FALSE,
+
     LET,
     CONST,
     DUMP,

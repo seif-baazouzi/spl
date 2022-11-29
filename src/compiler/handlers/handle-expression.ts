@@ -1,24 +1,41 @@
 import { TokenType } from "~/lexer/lexer-types.ts"
-import { BinaryExpression, Expression, Identifier, NodeType, Numerical } from "~/parser/parser-types.ts"
-import { Environment } from "../compiler-types.ts"
+import { BinaryExpression, Boolean, Expression, Identifier, NodeType, Numerical } from "~/parser/parser-types.ts"
+import { VariableType } from "~/parser/parser-types.ts"
+import { checkBinaryExpression } from "~/compiler/compiler-checks.ts"
+import { ExpressionValue, Environment } from "~/compiler/compiler-types.ts";
 
-export function handleExpression(expression: Expression, env: Environment): string {
+export function handleExpression(expression: Expression, env: Environment): ExpressionValue {
     switch(expression.kind) {
         case NodeType.NUMBER: {
             const st = expression as Numerical
-            return [
-                `push eax`,
-                `mov eax, ${st.value}`,
-            ].join("\n")
+            return {
+                type: VariableType.NUMBER,
+                assembly: [
+                    `push eax`,
+                    `mov eax, ${st.value}`,
+                ].join("\n")
+            }
+        }
+        case NodeType.BOOLEAN: {
+            const st = expression as Boolean
+            return {
+                type: VariableType.BOOLEAN,
+                assembly: [
+                    `push eax`,
+                    `mov eax, ${st.value ? 1 : 0}`,
+                ].join("\n")
+            }
         }
         case NodeType.IDENTIFIER: {
             const st = expression as Identifier
             const variable = env.getVariable(st.symbol)
-                        
-            return [
-                `push eax`,
-                `mov eax, [ebp+${variable.index*4}]`,
-            ].join("\n")
+            return {
+                type: variable.type,
+                assembly: [
+                    `push eax`,
+                    `mov eax, [ebp+${variable.index*4}]`,
+                ].join("\n")
+            }   
         }
         case NodeType.BINARY_EXPRESSION: {
             const st = expression as BinaryExpression
@@ -31,11 +48,16 @@ export function handleExpression(expression: Expression, env: Environment): stri
     }
 }
 
-export function handleBinaryExpression(expression: BinaryExpression, env: Environment): string {
+export function handleBinaryExpression(expression: BinaryExpression, env: Environment): ExpressionValue {
     const result = []
 
-    result.push(handleExpression(expression.right, env))
-    result.push(handleExpression(expression.left, env))
+    const rightExpression = handleExpression(expression.right, env)
+    const leftExpression = handleExpression(expression.left, env)
+
+    checkBinaryExpression(leftExpression.type, rightExpression.type)
+
+    result.push(rightExpression.assembly)
+    result.push(leftExpression.assembly)
     result.push("pop ebx")
     
     switch(expression.operation.type) {
@@ -62,5 +84,8 @@ export function handleBinaryExpression(expression: BinaryExpression, env: Enviro
         }
     }
 
-    return result.join("\n")
+    return {
+        type: VariableType.NUMBER,
+        assembly: result.join("\n")
+    } 
 }
