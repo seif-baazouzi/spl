@@ -1,5 +1,5 @@
 import { Token, TokenType } from "~/lexer/lexer-types.ts"
-import { NodeType, Statement, BinaryExpression, Numerical, Identifier, Program, Expression, DumpStatement, DeclareVariable } from "~/parser/parser-types.ts"
+import { NodeType, Statement, BinaryExpression, Numerical, Identifier, Program, Expression, DumpStatement, DeclareVariable, AssignVariable } from "~/parser/parser-types.ts"
 
 export class Parser {
     constructor(
@@ -29,6 +29,17 @@ export class Parser {
                 } else {
                     return new DeclareVariable(variableName)
                 }
+            }
+            case TokenType.IDENTIFIER: {                
+                if(this.next().type != TokenType.EQUAL) {
+                    return this.parseExpression()
+                }
+
+                const variableName = this.eat().value as string          
+                this.eat() // eat =
+                
+                const expression = this.parseExpression()
+                return new AssignVariable(variableName, expression)
             }
             case TokenType.DUMP: {
                 this.eat()
@@ -101,6 +112,10 @@ export class Parser {
     
     at(): Token {
         return this.tokens[0] ?? new Token(TokenType.EOF, "EOF")
+    }
+
+    next(): Token {
+        return this.tokens[1] ?? new Token(TokenType.EOF, "EOF")
     }
 
     eat(): Token {

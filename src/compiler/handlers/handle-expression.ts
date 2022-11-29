@@ -14,7 +14,6 @@ export function handleExpression(expression: Expression, env: Environment): stri
         case NodeType.IDENTIFIER: {
             const st = expression as Identifier
             const variable = env.getVariable(st.symbol)
-            console.log(variable);
                         
             return [
                 `push eax`,
