@@ -3,6 +3,7 @@ import { Program } from "~/parser/parser-types.ts"
 import template from "~/compiler/template.ts"
 import { run } from "~/compiler/compiler-helpers.ts"
 import { handleStatement } from "~/compiler/handlers/handle-statement.ts"
+import { Environment } from "~/compiler/compiler-types.ts"
 
 export default async function compile(program: Program) {
     await run("rm", "-rf", "dist")
@@ -18,5 +19,10 @@ export default async function compile(program: Program) {
 }
 
 function generateAssemblyCode(program: Program): string {
-    return program.body.map(handleStatement).join("\n")
+    const env = new Environment()
+    
+    const result = program.body.map((s) => handleStatement(s, env))
+    result.unshift(`add esp, ${env.getVariablesCount()*4}`)
+
+    return result.join("\n")
 }

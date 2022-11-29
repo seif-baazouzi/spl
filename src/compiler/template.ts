@@ -48,10 +48,11 @@ dump:
   ret
 
 _start:
-  xor eax, eax  
+  mov ebp, esp
+  xor eax, eax
 
   %CODE%
-    
+
   mov eax, 0x1
   mov ebx, 0x0
   int 0x80

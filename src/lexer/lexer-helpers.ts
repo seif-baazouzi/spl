@@ -19,6 +19,10 @@ export function handlerAlpha(code: string[], tokens: Token[]) {
     }
 
     switch(alpha) {
+        case "let": {
+            tokens.push(new Token(TokenType.LET, alpha))
+            break
+        }
         case "dump": {
             tokens.push(new Token(TokenType.DUMP, alpha))
             break

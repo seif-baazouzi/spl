@@ -1,7 +1,8 @@
 import { TokenType } from "~/lexer/lexer-types.ts"
-import { BinaryExpression, Expression, NodeType, Numerical } from "~/parser/parser-types.ts"
+import { BinaryExpression, Expression, Identifier, NodeType, Numerical } from "~/parser/parser-types.ts"
+import { Environment } from "../compiler-types.ts"
 
-export function handleExpression(expression: Expression): string {
+export function handleExpression(expression: Expression, env: Environment): string {
     switch(expression.kind) {
         case NodeType.NUMBER: {
             const st = expression as Numerical
@@ -11,26 +12,31 @@ export function handleExpression(expression: Expression): string {
             ].join("\n")
         }
         case NodeType.IDENTIFIER: {
-            console.log("Compiling NodeType.IDENTIFIER Not Implemented yet!");
-            Deno.exit(1)
-            break
+            const st = expression as Identifier
+            const variable = env.getVariable(st.symbol)
+            console.log(variable);
+                        
+            return [
+                `push eax`,
+                `mov eax, [ebp+${variable.index*4}]`,
+            ].join("\n")
         }
         case NodeType.BINARY_EXPRESSION: {
             const st = expression as BinaryExpression
-            return handleBinaryExpression(st)
+            return handleBinaryExpression(st, env)
         }
         default: {
-            console.log("Unexpected NodeType");
+            console.log("Unexpected NodeType")
             Deno.exit(1)
         }
     }
 }
 
-export function handleBinaryExpression(expression: BinaryExpression): string {
+export function handleBinaryExpression(expression: BinaryExpression, env: Environment): string {
     const result = []
 
-    result.push(handleExpression(expression.right))
-    result.push(handleExpression(expression.left))
+    result.push(handleExpression(expression.right, env))
+    result.push(handleExpression(expression.left, env))
     result.push("pop ebx")
     
     switch(expression.operation.type) {

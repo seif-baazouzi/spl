@@ -6,6 +6,7 @@ export enum NodeType {
     NUMBER,
     IDENTIFIER,
     BINARY_EXPRESSION,
+    DECLARE_VARIABLE,
 }
 
 export class Statement {
@@ -37,6 +38,12 @@ export class DumpStatement extends Statement {
     }
 }
 
+export class DeclareVariable extends Statement {    
+    constructor(public name: string, public expression?: Expression) {
+        super(NodeType.DECLARE_VARIABLE)
+    }
+}
+
 export class BinaryExpression extends Statement {
     constructor(
         public operation: Token,
@@ -50,7 +57,7 @@ export class BinaryExpression extends Statement {
 export class Identifier extends Expression {
     constructor(
         public kind: NodeType,
-        public symbol: string|undefined,
+        public symbol: string,
     ) {
         super(kind)
     }
@@ -64,4 +71,3 @@ export class Numerical extends Expression {
         super(kind)
     }
 }
-

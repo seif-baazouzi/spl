@@ -71,5 +71,5 @@ export function tokenize(sourceCode: string): Token[] {
     }
 
     tokens.push(new Token(TokenType.EOF, "EOF"))
-    return tokens;
+    return tokens
 }

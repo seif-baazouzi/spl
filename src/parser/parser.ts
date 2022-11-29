@@ -1,5 +1,5 @@
 import { Token, TokenType } from "~/lexer/lexer-types.ts"
-import { NodeType, Statement, BinaryExpression, Numerical, Identifier, Program, Expression, DumpStatement } from "~/parser/parser-types.ts"
+import { NodeType, Statement, BinaryExpression, Numerical, Identifier, Program, Expression, DumpStatement, DeclareVariable } from "~/parser/parser-types.ts"
 
 export class Parser {
     constructor(
@@ -19,13 +19,28 @@ export class Parser {
 
     parseStatement(): Statement {
         switch(this.at().type) {
+            case TokenType.LET: {
+                this.eat()
+                const variableName = this.expect(TokenType.IDENTIFIER, "Expected variable name after let keyword").value as string             
+                if(this.at().type == TokenType.EQUAL) {
+                    this.eat()
+                    const expression = this.parseExpression()
+                    return new DeclareVariable(variableName, expression)
+                } else {
+                    return new DeclareVariable(variableName)
+                }
+            }
             case TokenType.DUMP: {
                 this.eat()
                 const expression = this.parseExpression()
                 return new DumpStatement(expression)
             }
+            case TokenType.END_LINE: {
+                this.eat()
+                return this.parseStatement()
+            }
             default: {
-                return this.parseAddingStatement()   
+                return this.parseExpression()   
             } 
         } 
     }
@@ -68,7 +83,7 @@ export class Parser {
                 return new Numerical(NodeType.NUMBER, parseInt(this.eat().value ?? ""))
             }
             case TokenType.IDENTIFIER: {
-                return new Identifier(NodeType.IDENTIFIER, this.eat().value)
+                return new Identifier(NodeType.IDENTIFIER, this.eat().value as string)
             }
             case TokenType.OPEN_PAREN: {
                 this.eat()
@@ -85,19 +100,19 @@ export class Parser {
     }
     
     at(): Token {
-        return this.tokens[0] ?? new Token(TokenType.EOF, "EOF");
+        return this.tokens[0] ?? new Token(TokenType.EOF, "EOF")
     }
 
     eat(): Token {
         return this.tokens.shift() ?? new Token(TokenType.EOF, "EOF")
     }
 
-    expect(type: TokenType, message: string) {
+    expect(type: TokenType, message: string): Token {
         if(this.tokens[0]?.type != type) {
             console.error(`Error: ${message}`)
             Deno.exit(1)
         }
 
-        this.tokens.shift()
+        return this.tokens.shift() as Token
     }
 }
