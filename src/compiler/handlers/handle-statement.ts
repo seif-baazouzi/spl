@@ -1,4 +1,4 @@
-import { AssignVariable, DeclareVariable, DumpStatement, Expression, NodeType, Statement, VariableType } from "~/parser/parser-types.ts"
+import { AssignVariable, DeclareVariable, PrintStatement, Expression, NodeType, Statement, VariableType } from "~/parser/parser-types.ts"
 import handleDeclareVariable from "~/compiler/handlers/handle-declare-variable.ts"
 import { handleExpression } from "~/compiler/handlers/handle-expression.ts"
 import { Environment } from "~/compiler/compiler-types.ts"
@@ -14,8 +14,8 @@ export function handleStatement(statement: Statement, env: Environment): string 
             const st = statement as AssignVariable
             return handleAssignVariable(st, env)
         }
-        case NodeType.DUMP: {
-            const st = statement as DumpStatement
+        case NodeType.PRINT: {
+            const st = statement as PrintStatement
             const expression = handleExpression(st.expression, env)
             return [
                 expression.assembly,

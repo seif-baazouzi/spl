@@ -2,7 +2,7 @@ import { Token } from "~/lexer/lexer-types.ts"
 
 export enum NodeType {
     PROGRAM,
-    DUMP,
+    PRINT,
     NUMBER,
     BOOLEAN,
     IDENTIFIER,
@@ -41,9 +41,9 @@ export class Expression extends Statement {
     }
 }
 
-export class DumpStatement extends Statement {    
+export class PrintStatement extends Statement {    
     constructor(public expression: Expression) {
-        super(NodeType.DUMP)
+        super(NodeType.PRINT)
     }
 }
 

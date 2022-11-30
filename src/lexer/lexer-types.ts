@@ -23,7 +23,7 @@ export enum TokenType {
 
     LET,
     CONST,
-    DUMP,
+    PRINT,
 }
 
 export class Token {

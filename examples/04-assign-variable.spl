@@ -1,5 +1,5 @@
 let x: number = 10
-dump(x)
+print(x)
 
 x = x + 10
-dump(x)
+print(x)

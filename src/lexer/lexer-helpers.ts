@@ -31,8 +31,8 @@ export function handlerAlpha(code: string[]): { type: TokenType, alpha: string }
         case "false": {
             return { type: TokenType.FALSE, alpha }
         }
-        case "dump": {
-            return { type: TokenType.DUMP, alpha }
+        case "print": {
+            return { type: TokenType.PRINT, alpha }
         }
         default: {
             return { type: TokenType.IDENTIFIER, alpha }
