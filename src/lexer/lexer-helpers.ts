@@ -12,7 +12,7 @@ export function isShippable(str: string): boolean {
     return str == " " || str == "\t"
 }
 
-export function handlerAlpha(code: string[], tokens: Token[]) {
+export function handlerAlpha(code: string[]): { type: TokenType, alpha: string } {
     let alpha = ""
     while (isAlpha(code[0]) || isNumber(code[0])) {
         alpha += code.shift()
@@ -20,27 +20,22 @@ export function handlerAlpha(code: string[], tokens: Token[]) {
 
     switch(alpha) {
         case "let": {
-            tokens.push(new Token(TokenType.LET, alpha))
-            break
+            return { type: TokenType.LET, alpha }
         }
         case "const": {
-            tokens.push(new Token(TokenType.CONST, alpha))
-            break
+            return { type: TokenType.CONST, alpha }
         }
         case "true": {
-            tokens.push(new Token(TokenType.TRUE, alpha))
-            break
+            return { type: TokenType.TRUE, alpha }
         }
         case "false": {
-            tokens.push(new Token(TokenType.FALSE, alpha))
-            break
+            return { type: TokenType.FALSE, alpha }
         }
         case "dump": {
-            tokens.push(new Token(TokenType.DUMP, alpha))
-            break
+            return { type: TokenType.DUMP, alpha }
         }
         default: {
-            tokens.push(new Token(TokenType.IDENTIFIER, alpha))
+            return { type: TokenType.IDENTIFIER, alpha }
         }
     }
 }

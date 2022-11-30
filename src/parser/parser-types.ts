@@ -48,13 +48,13 @@ export class DumpStatement extends Statement {
 }
 
 export class DeclareVariable extends Statement {    
-    constructor(public name: string, public isConstant: boolean = false, public type: VariableType, public expression?: Expression) {
+    constructor(public name: Token, public isConstant: boolean = false, public type: VariableType, public expression?: Expression) {
         super(NodeType.DECLARE_VARIABLE)
     }
 }
 
 export class AssignVariable extends Statement {    
-    constructor(public name: string, public expression: Expression) {
+    constructor(public name: Token, public expression: Expression) {
         super(NodeType.ASSIGN_VARIABLE)
     }
 }
@@ -72,7 +72,7 @@ export class BinaryExpression extends Statement {
 export class Identifier extends Expression {
     constructor(
         public kind: NodeType,
-        public symbol: string,
+        public symbol: Token,
     ) {
         super(kind)
     }
@@ -81,7 +81,7 @@ export class Identifier extends Expression {
 export class Numerical extends Expression {
     constructor(
         public kind: NodeType,
-        public value: number,
+        public number: Token,
     ) {
         super(kind)
     }

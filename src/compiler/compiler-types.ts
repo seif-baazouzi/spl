@@ -1,4 +1,6 @@
+import { Token } from "~/lexer/lexer-types.ts";
 import { DeclareVariable, VariableType } from "~/parser/parser-types.ts";
+import logError from "~/utils/log-error.ts";
 
 export class Variable {
     constructor(
@@ -20,24 +22,28 @@ export class Environment {
     constructor(private parent?: Environment) {}
     
     declareVariable(st: DeclareVariable): number {
-        if(this.hasVariable(st.name)) {
-            console.log(`Error: Variable ${st.name} is already declared!`)
+        if(this.hasVariable(st.name.value)) {
+            logError(
+                st.name.line,
+                st.name.colum,
+                `Variable ${st.name} is already declared!`    
+            )
             Deno.exit(1)
         }
 
-        if(st.isConstant) this.constants.add(st.name)
+        if(st.isConstant) this.constants.add(st.name.value)
 
-        this.variables.set(st.name, new Variable(this.index, st.type))
+        this.variables.set(st.name.value, new Variable(this.index, st.type))
         return this.index++
     }
 
-    getVariable(variableName: string): Variable {
-        if(!this.hasVariable(variableName)) {
-            console.log(`Error: Variable ${variableName} is not declared!`)
+    getVariable(variableName: Token): Variable {
+        if(!this.hasVariable(variableName.value)) {
+            logError(variableName.line, variableName.colum, `Error: Variable ${variableName.value} is not declared!`)
             Deno.exit(1)
         }
 
-        return this.variables.get(variableName) as Variable
+        return this.variables.get(variableName.value) as Variable
     }
 
     hasVariable(varName: string): boolean {

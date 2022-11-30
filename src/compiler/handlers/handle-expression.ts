@@ -12,7 +12,7 @@ export function handleExpression(expression: Expression, env: Environment): Expr
                 type: VariableType.NUMBER,
                 assembly: [
                     `push eax`,
-                    `mov eax, ${st.value}`,
+                    `mov eax, ${st.number.value}`,
                 ].join("\n")
             }
         }
@@ -42,7 +42,7 @@ export function handleExpression(expression: Expression, env: Environment): Expr
             return handleBinaryExpression(st, env)
         }
         default: {
-            console.log("Unexpected NodeType")
+            console.log(`DEBUG: Unexpected NodeType ${expression}`)
             Deno.exit(1)
         }
     }
@@ -54,7 +54,7 @@ export function handleBinaryExpression(expression: BinaryExpression, env: Enviro
     const rightExpression = handleExpression(expression.right, env)
     const leftExpression = handleExpression(expression.left, env)
 
-    checkBinaryExpression(leftExpression.type, rightExpression.type)
+    checkBinaryExpression(expression.operation, leftExpression.type, rightExpression.type)
 
     result.push(rightExpression.assembly)
     result.push(leftExpression.assembly)

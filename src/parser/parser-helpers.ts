@@ -1,13 +1,15 @@
 import { VariableType } from "~/parser/parser-types.ts";
+import { Token } from "~/lexer/lexer-types.ts";
+import logError from "../utils/log-error.ts";
 
-export function getVariableType(type: string): VariableType {
-    switch(type) {
+export function getVariableType(type: Token): VariableType {
+    switch(type.value) {
         case "number":
             return VariableType.NUMBER
         case "bool":
             return VariableType.BOOLEAN
         default: {
-            console.log(`Error: Unexpected type ${type}`)
+            logError(type.line, type.colum, `Unexpected type ${type.value}`)
             Deno.exit(1)
         }
     }

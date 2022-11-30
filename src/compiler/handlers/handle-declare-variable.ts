@@ -1,6 +1,7 @@
 import { DeclareVariable, Expression } from "~/parser/parser-types.ts"
 import { handleExpression } from "~/compiler/handlers/handle-expression.ts"
 import { Environment } from "~/compiler/compiler-types.ts"
+import logError from "~/utils/log-error.ts"
 
 export default function handleDeclareVariable(statement: DeclareVariable, env: Environment): string {
     const result: string[] = []
@@ -21,7 +22,11 @@ export default function handleDeclareVariable(statement: DeclareVariable, env: E
             assembly = expression.assembly
 
             if(expression.type != statement.type) {
-                console.log("Error: The assigned expression has different type of the variable type")
+                logError(
+                    statement.name.line,
+                    statement.name.colum,
+                    `The assigned expression has different type of the variable type`    
+                )
                 Deno.exit(1)
             }
         }

@@ -1,6 +1,7 @@
 import { Token, TokenType } from "~/lexer/lexer-types.ts"
 import { NodeType, Statement, BinaryExpression, Numerical, Identifier, Program, Expression, DumpStatement, DeclareVariable, AssignVariable, Boolean, VariableType } from "~/parser/parser-types.ts"
-import { getVariableType } from "./parser-helpers.ts"
+import logError from "~/utils/log-error.ts"
+import { getVariableType } from "~/parser/parser-helpers.ts"
 
 export class Parser {
     constructor(
@@ -22,10 +23,10 @@ export class Parser {
         switch(this.at().type) {
             case TokenType.LET: {
                 this.eat() // eat let keyword
-                const variableName = this.expect(TokenType.IDENTIFIER, "Expected variable name after let keyword").value as string            
+                const variableName = this.expect(TokenType.IDENTIFIER, "Expected variable name after let keyword")           
                 
                 this.expect(TokenType.COLON, "Expected colon after variable name!")                
-                const variableType = this.expect(TokenType.IDENTIFIER, "Expected variable type and variable name!").value as string
+                const variableType = this.expect(TokenType.IDENTIFIER, "Expected variable type and variable name!")
                 
                 if(this.at().type == TokenType.EQUAL) {
                     this.eat() // eat =
@@ -37,8 +38,8 @@ export class Parser {
             }
             case TokenType.CONST: {
                 this.eat() // eat const keyword
-                const variableName = this.expect(TokenType.IDENTIFIER, "Expected constant name after const keyword").value as string             
-                this.expect(TokenType.EQUAL, "Expected equals sign after constant name").value as string             
+                const variableName = this.expect(TokenType.IDENTIFIER, "Expected constant name after const keyword")        
+                this.expect(TokenType.EQUAL, "Expected equals sign after constant name")
                 
                 const expression = this.parseExpression()
                 return new DeclareVariable(variableName, true, VariableType.CONSTANT, expression)
@@ -48,7 +49,7 @@ export class Parser {
                     return this.parseExpression()
                 }
 
-                const variableName = this.eat().value as string          
+                const variableName = this.eat()        
                 this.eat() // eat =
                 
                 const expression = this.parseExpression()
@@ -104,7 +105,7 @@ export class Parser {
 
         switch(token.type) {
             case TokenType.NUMBER: {
-                return new Numerical(NodeType.NUMBER, parseInt(this.eat().value ?? ""))
+                return new Numerical(NodeType.NUMBER, this.eat())
             }
             case TokenType.TRUE: {
                 this.eat() // eat true
@@ -115,7 +116,7 @@ export class Parser {
                 return new Boolean(false)
             }
             case TokenType.IDENTIFIER: {
-                return new Identifier(NodeType.IDENTIFIER, this.eat().value as string)
+                return new Identifier(NodeType.IDENTIFIER, this.eat())
             }
             case TokenType.OPEN_PAREN: {
                 this.eat()
@@ -125,27 +126,28 @@ export class Parser {
                 return value
             }
             default: {
-                console.error(`Error: Unexpected token ${token.value}`)
+                logError(token.line, token.colum, `Unexpected token ${token.value}`)
                 Deno.exit(1)
             }            
         }
     }
     
     at(): Token {
-        return this.tokens[0] ?? new Token(TokenType.EOF, "EOF")
+        return this.tokens[0] ?? new Token(TokenType.EOF, "EOF", 0, 0)
     }
 
     next(): Token {
-        return this.tokens[1] ?? new Token(TokenType.EOF, "EOF")
+        return this.tokens[1] ?? new Token(TokenType.EOF, "EOF", 0, 0)
     }
 
     eat(): Token {
-        return this.tokens.shift() ?? new Token(TokenType.EOF, "EOF")
+        return this.tokens.shift() ?? new Token(TokenType.EOF, "EOF", 0, 0)
     }
 
     expect(type: TokenType, message: string): Token {
-        if(this.tokens[0]?.type != type) {
-            console.error(`Error: ${message}`)
+        const token = this.at()
+        if(token.type != type) {
+            logError(token.line, token.colum, message)
             Deno.exit(1)
         }
 

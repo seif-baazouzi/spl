@@ -29,6 +29,8 @@ export enum TokenType {
 export class Token {
     constructor(
         public type: TokenType,
-        public value: string | undefined,
+        public value: string,
+        public line: number,
+        public colum: number,
     ) { }
 }
