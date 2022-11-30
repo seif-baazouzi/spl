@@ -26,7 +26,7 @@ export class Parser {
                 const variableName = this.expect(TokenType.IDENTIFIER, "Expected variable name after let keyword")           
                 
                 this.expect(TokenType.COLON, "Expected colon after variable name!")                
-                const variableType = this.expect(TokenType.IDENTIFIER, "Expected variable type and variable name!")
+                const variableType = this.expect(TokenType.IDENTIFIER, "Expected variable type after variable name!")
                 
                 if(this.at().type == TokenType.EQUAL) {
                     this.eat() // eat =
@@ -39,7 +39,7 @@ export class Parser {
             case TokenType.CONST: {
                 this.eat() // eat const keyword
                 const variableName = this.expect(TokenType.IDENTIFIER, "Expected constant name after const keyword")        
-                this.expect(TokenType.EQUAL, "Expected equals sign after constant name")
+                this.expect(TokenType.EQUAL, "Expected equal after constant name")
                 
                 const expression = this.parseExpression()
                 return new DeclareVariable(variableName, true, VariableType.CONSTANT, expression)

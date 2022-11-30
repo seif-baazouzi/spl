@@ -2,6 +2,7 @@ import { DeclareVariable, Expression } from "~/parser/parser-types.ts"
 import { handleExpression } from "~/compiler/handlers/handle-expression.ts"
 import { Environment } from "~/compiler/compiler-types.ts"
 import logError from "~/utils/log-error.ts"
+import typeToString from "../../utils/type-to-string.ts"
 
 export default function handleDeclareVariable(statement: DeclareVariable, env: Environment): string {
     const result: string[] = []
@@ -25,7 +26,7 @@ export default function handleDeclareVariable(statement: DeclareVariable, env: E
                 logError(
                     statement.name.line,
                     statement.name.colum,
-                    `The assigned expression has different type of the variable type`    
+                    `Can not assign ${typeToString(expression.type)} to ${typeToString(statement.type)}`    
                 )
                 Deno.exit(1)
             }

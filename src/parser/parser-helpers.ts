@@ -9,7 +9,7 @@ export function getVariableType(type: Token): VariableType {
         case "bool":
             return VariableType.BOOLEAN
         default: {
-            logError(type.line, type.colum, `Unexpected type ${type.value}`)
+            logError(type.line, type.colum, `Invalid variable type ${type.value}`)
             Deno.exit(1)
         }
     }

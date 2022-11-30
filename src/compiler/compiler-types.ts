@@ -26,7 +26,7 @@ export class Environment {
             logError(
                 st.name.line,
                 st.name.colum,
-                `Variable ${st.name} is already declared!`    
+                `Identifier ${st.name} is already declared!`
             )
             Deno.exit(1)
         }
