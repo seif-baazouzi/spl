@@ -3,7 +3,7 @@ global _start
 
 section .text:
 
-dump:
+_print_number:
   push eax
   push ebx
   push ecx
@@ -47,6 +47,36 @@ dump:
 
   ret
 
+_print_boolean:
+  push eax
+
+  mov eax, [esp+8]
+
+  cmp eax, 0
+  jne .print_true
+  jmp .print_false
+
+  .print_true:
+    mov eax, 0x4
+    mov ebx, 0x1
+    mov ecx, true
+    mov edx, trueLength
+    int 0x80
+    jmp .end
+  
+  .print_false:
+    mov eax, 0x4
+    mov ebx, 0x1
+    mov ecx, false
+    mov edx, falseLength
+    int 0x80
+
+  .end:
+  mov esp, ebp
+  pop eax
+
+  ret
+
 _start:
   mov ebp, esp
   xor eax, eax
@@ -56,4 +86,10 @@ _start:
   mov eax, 0x1
   mov ebx, 0x0
   int 0x80
+
+section .data:
+  true: db "true", 0xa
+  trueLength equ $-true
+  false: db "false", 0xa
+  falseLength equ $-false
 `
