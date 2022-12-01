@@ -15,7 +15,6 @@ export default async function compile(program: Program) {
 
     await run("nasm", "-f", "elf32", "-o", "dist/res.o", "dist/res.asm")
     await run("ld", "-m", "elf_i386", "-o", "dist/res", "dist/res.o")
-    await run("./dist/res")
 }
 
 function generateAssemblyCode(program: Program): string {

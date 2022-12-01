@@ -10,14 +10,19 @@ export default function handleDeclareVariable(statement: DeclareVariable, env: E
     let index: number
     let assembly = ""
 
+    // handle constant
     if(statement.isConstant) {
         const expression = handleExpression(statement.expression as Expression, env)
         statement.type = expression.type
         assembly = expression.assembly
         index = env.declareVariable(statement)
-    } else {
+    }
+    
+    // handle variable
+    else {
         index = env.declareVariable(statement)
 
+        // handle variable expression
         if(statement.expression) {
             const expression = handleExpression(statement.expression as Expression, env)
             assembly = expression.assembly

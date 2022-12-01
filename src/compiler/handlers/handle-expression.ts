@@ -2,7 +2,7 @@ import { TokenType } from "~/lexer/lexer-types.ts"
 import { BinaryExpression, Boolean, Expression, Identifier, NodeType, Numerical } from "~/parser/parser-types.ts"
 import { VariableType } from "~/parser/parser-types.ts"
 import { checkBinaryExpression } from "~/compiler/compiler-checks.ts"
-import { ExpressionValue, Environment } from "~/compiler/compiler-types.ts";
+import { ExpressionValue, Environment } from "~/compiler/compiler-types.ts"
 
 export function handleExpression(expression: Expression, env: Environment): ExpressionValue {
     switch(expression.kind) {

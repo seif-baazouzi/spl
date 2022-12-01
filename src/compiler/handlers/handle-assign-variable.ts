@@ -1,10 +1,11 @@
-import { handleExpression } from "~/compiler/handlers/handle-expression.ts";
-import { AssignVariable } from "~/parser/parser-types.ts";
-import { Environment } from "~/compiler/compiler-types.ts";
-import logError from "~/utils/log-error.ts";
-import typeToString from "~/utils/type-to-string.ts";
+import { handleExpression } from "~/compiler/handlers/handle-expression.ts"
+import { AssignVariable } from "~/parser/parser-types.ts"
+import { Environment } from "~/compiler/compiler-types.ts"
+import logError from "~/utils/log-error.ts"
+import typeToString from "~/utils/type-to-string.ts"
 
 export default function handleAssignVariable(statement: AssignVariable, env: Environment) {
+    // variable is not declared
     if(!env.hasVariable(statement.name.value)) {
         logError(
             statement.name.line,
@@ -14,6 +15,7 @@ export default function handleAssignVariable(statement: AssignVariable, env: Env
         Deno.exit()
     }
     
+    // variable is a constant
     if(env.isConstant(statement.name.value)) {
         logError(
             statement.name.line,
@@ -23,9 +25,11 @@ export default function handleAssignVariable(statement: AssignVariable, env: Env
         Deno.exit()
     }
 
+
     const variable = env.getVariable(statement.name)
     const expression = handleExpression(statement.expression, env)
 
+    // expression type is different than variable type
     if(variable.type != expression.type) {
         logError(
             statement.name.line,

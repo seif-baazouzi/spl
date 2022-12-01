@@ -1,4 +1,4 @@
-import { VariableType } from "~/parser/parser-types.ts";
+import { VariableType } from "~/parser/parser-types.ts"
 
 export default function typeToString(type: VariableType): string {
     switch(type) {
@@ -7,7 +7,7 @@ export default function typeToString(type: VariableType): string {
         case VariableType.BOOLEAN: 
             return "boolean"
         default: {
-            throw new Error("DEBUG: Invalid Variable Type");
+            throw new Error("DEBUG: Invalid Variable Type")
         }
     }
 }

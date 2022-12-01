@@ -1,6 +1,6 @@
-import { Token } from "~/lexer/lexer-types.ts";
-import { DeclareVariable, VariableType } from "~/parser/parser-types.ts";
-import logError from "~/utils/log-error.ts";
+import { Token } from "~/lexer/lexer-types.ts"
+import { DeclareVariable, VariableType } from "~/parser/parser-types.ts"
+import logError from "~/utils/log-error.ts"
 
 export class Variable {
     constructor(
@@ -15,7 +15,7 @@ export interface ExpressionValue {
 }
 
 export class Environment {
-    private index = 0;
+    private index = 0
     private variables: Map<string, Variable> = new Map()
     private constants: Set<string> = new Set()
 

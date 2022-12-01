@@ -3,6 +3,7 @@ import handleDeclareVariable from "~/compiler/handlers/handle-declare-variable.t
 import { handleExpression } from "~/compiler/handlers/handle-expression.ts"
 import { Environment } from "~/compiler/compiler-types.ts"
 import handleAssignVariable from "~/compiler/handlers/handle-assign-variable.ts"
+import handlePrint from "./handle-print.ts"
 
 export function handleStatement(statement: Statement, env: Environment): string {
     switch(statement.kind) {
@@ -16,12 +17,7 @@ export function handleStatement(statement: Statement, env: Environment): string 
         }
         case NodeType.PRINT: {
             const st = statement as PrintStatement
-            const expression = handleExpression(st.expression, env)
-            return [
-                expression.assembly,
-                "push eax",
-                `call ${expression.type === VariableType.NUMBER ? "_print_number" : "_print_boolean"}`,
-            ].join("\n")
+            return handlePrint(st, env)
         }
         default: {
             const st = statement as Expression

@@ -1,6 +1,6 @@
-import { VariableType } from "~/parser/parser-types.ts";
-import { Token } from "~/lexer/lexer-types.ts";
-import logError from "~/utils/log-error.ts";
+import { VariableType } from "~/parser/parser-types.ts"
+import { Token } from "~/lexer/lexer-types.ts"
+import logError from "~/utils/log-error.ts"
 
 export function checkBinaryExpression(operation: Token, leftType: VariableType, rightType: VariableType) {
     if(leftType != VariableType.NUMBER || rightType != VariableType.NUMBER) {
