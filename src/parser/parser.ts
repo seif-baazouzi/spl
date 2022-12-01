@@ -3,7 +3,7 @@ import { NodeType, Statement, BinaryExpression, Numerical, Identifier, Program, 
 import logError from "~/utils/log-error.ts"
 import { getVariableType } from "~/parser/parser-helpers.ts"
 
-export class Parser {
+export default class Parser {
     constructor(
         private tokens: Token[]
     ) {}

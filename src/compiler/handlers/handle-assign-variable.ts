@@ -2,7 +2,7 @@ import { handleExpression } from "~/compiler/handlers/handle-expression.ts";
 import { AssignVariable } from "~/parser/parser-types.ts";
 import { Environment } from "~/compiler/compiler-types.ts";
 import logError from "~/utils/log-error.ts";
-import typeToString from "../../utils/type-to-string.ts";
+import typeToString from "~/utils/type-to-string.ts";
 
 export default function handleAssignVariable(statement: AssignVariable, env: Environment) {
     if(!env.hasVariable(statement.name.value)) {
