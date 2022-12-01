@@ -1,6 +1,6 @@
 import logError from "~/utils/log-error.ts"
 import { TokenType, Token } from "~/lexer/lexer-types.ts"
-import { handlerAlpha, isAlpha, isNumber, isShippable } from "~/lexer/lexer-helpers.ts"
+import { isAlpha, isNumber, isWhitespace } from "~/lexer/lexer-helpers.ts"
 
 const lookupTokens: {[index: string]: TokenType} = {
     "(": TokenType.OPEN_PAREN,
@@ -14,10 +14,18 @@ const lookupTokens: {[index: string]: TokenType} = {
     ":": TokenType.COLON,
     ";": TokenType.END_LINE,
     "\n": TokenType.END_LINE,
+
+    "let": TokenType.LET,
+    "const": TokenType.CONST,
+    "print": TokenType.PRINT,
+    "true": TokenType.TRUE,
+    "false": TokenType.FALSE,
 }
 
 export default class Lexer {
     private code: string[]
+    private tokens: Token[] = []
+
     private lineCounter = 1
     private columnCounter = 1
 
@@ -26,62 +34,86 @@ export default class Lexer {
     }
 
     tokenize(): Token[] {
-        const tokens: Token[] = []
+        this.tokens = []
 
         loop:
-        while (this.code.length != 0) {        
+        while (this.code.length != 0) {     
+            // handler predefined tokens         
             for(const token in lookupTokens) {
-                if(this.code[0] == token) {
-                    const tokenType = lookupTokens[token]
-                    tokens.push(this.eat(tokenType))
+                if(this.copyToken(token.length) === token) {
+                    const tokenType = lookupTokens[token]                    
+                    this.tokens.push(new Token(tokenType, token, this.lineCounter, this.columnCounter))
+                    this.shiftToken(token)
+
                     continue loop
                 }
             }
             
+            // handle number
             if (isNumber(this.code[0])) {
-                let number = ""
-                while (isNumber(this.code[0])) {
-                    number += this.code.shift()
-                }
-
-                tokens.push(new Token(TokenType.NUMBER, number, this.lineCounter, this.columnCounter))
-                this.columnCounter += number.length
+                this.handlerNumber()
                 continue
             }
 
-            if (isAlpha(this.code[0])) {
-                const { type, alpha } = handlerAlpha(this.code)
-                
-                tokens.push(new Token(type, alpha, this.lineCounter, this.columnCounter))
-                this.columnCounter += alpha.length
+            // handle identifier
+            if (isAlpha(this.code[0]) || this.code[0] === "_") {
+                this.handlerIdentifier()
                 continue
             }
 
-            if (isShippable(this.code[0])) {
+            // handle whitespace
+            if (isWhitespace(this.code[0])) {
                 this.code.shift()
                 this.columnCounter++
                 continue
             }
 
+            // invalid token
             logError(this.lineCounter, this.columnCounter,  `Invalid token ${this.code[0]}`)
             Deno.exit(1)
         }
 
-        tokens.push(new Token(TokenType.EOF, "EOF", this.lineCounter, this.columnCounter))
-        return tokens
+        this.tokens.push(new Token(TokenType.EOF, "EOF", this.lineCounter, this.columnCounter))
+        return this.tokens
     }
 
-    eat(type: TokenType, value?: string): Token {
-        if(this.code[0] == "\n") {
-            this.lineCounter++
-            this.columnCounter = 0
+    handlerNumber() {
+        let number = ""
+        while (isNumber(this.code[0])) {
+            number += this.code.shift()
         }
 
-        return new Token(
-            type,
-            value ? value : this.code.shift() as string,
-            this.lineCounter,
-            this.columnCounter++,
-        )
+        this.tokens.push(new Token(TokenType.NUMBER, number, this.lineCounter, this.columnCounter))
+        this.columnCounter += number.length
+    }
+
+    handlerIdentifier() {
+        let identifier = ""
+        while (isAlpha(this.code[0]) || isNumber(this.code[0]) || this.code[0] === "_") {
+            identifier += this.code.shift()
+        }
+
+        this.tokens.push(new Token(TokenType.IDENTIFIER, identifier, this.lineCounter, this.columnCounter))
+        this.columnCounter += identifier.length
+    }
+
+    copyToken(length: number): string {
+        const result: string[] = []
+        for(let i=0; i<length; i++) {
+            if(this.code[i]) result.push(this.code[i])
+        }
+        
+        return result.join("")
+    }
+
+    shiftToken(token: string) {
+        for(let i=0; i<token.length; i++) this.code.shift()
+
+        if(token === "\n") {
+            this.lineCounter++
+            this.columnCounter = 1
+        } else {
+            this.columnCounter += token.length
+        }
     }
 }
