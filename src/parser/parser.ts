@@ -19,7 +19,7 @@ export default class Parser {
         return program
     }
 
-    parseStatement(): Statement {
+    private parseStatement(): Statement {
         switch(this.at().type) {
             case TokenType.LET: {
                 this.eat() // eat let keyword
@@ -70,11 +70,28 @@ export default class Parser {
         } 
     }
     
-    parseExpression(): Expression {
+    private parseExpression(): Expression {
         return this.parseLogicalStatement()
     }
 
-    parseLogicalStatement(): Expression {
+    private parseLogicalStatement(): Expression {
+        let left: Statement = this.parseLogicalPrimary()
+        
+        while(
+            this.at().type === TokenType.AND ||
+            this.at().type === TokenType.OR  ||
+            this.at().type === TokenType.XOR
+        ) {
+            const operation = this.eat()
+            const right = this.parseLogicalPrimary()
+
+            left = new BinaryExpression(operation, left, right)
+        }
+
+        return left  
+    }
+
+    private parseLogicalPrimary(): Expression {
         let left: Statement = this.parseAddingStatement()
         
         while(
@@ -83,10 +100,7 @@ export default class Parser {
             this.at().type === TokenType.GRATER_OR_EQUALS ||
             this.at().type === TokenType.GRATER_THEN ||
             this.at().type === TokenType.LESS_OR_EQUALS ||
-            this.at().type === TokenType.LESS_THEN ||
-            this.at().type === TokenType.AND ||
-            this.at().type === TokenType.OR ||
-            this.at().type === TokenType.XOR
+            this.at().type === TokenType.LESS_THEN
         ) {
             const operation = this.eat()
             const right = this.parseAddingStatement()
@@ -97,7 +111,7 @@ export default class Parser {
         return left   
     }
 
-    parseAddingStatement(): Expression {
+    private parseAddingStatement(): Expression {
         let left: Statement = this.parseMultiplyingStatement()
         
         while(this.at().type === TokenType.PLUS || this.at().type === TokenType.MINUS) {
@@ -110,7 +124,7 @@ export default class Parser {
         return left
     }
 
-    parseMultiplyingStatement(): Expression {
+    private parseMultiplyingStatement(): Expression {
         let left: Statement = this.parsePrimary()
 
         while(this.at().type === TokenType.MULTIPLY || this.at().type === TokenType.DIVIDE || this.at().type === TokenType.MODULO) {
@@ -123,7 +137,7 @@ export default class Parser {
         return left
     }
     
-    parsePrimary(): Expression {
+    private parsePrimary(): Expression {
         const token = this.at()
 
         switch(token.type) {
@@ -155,19 +169,19 @@ export default class Parser {
         }
     }
     
-    at(): Token {
+    private at(): Token {
         return this.tokens[0] ?? new Token(TokenType.EOF, "EOF", 0, 0)
     }
 
-    next(): Token {
+    private next(): Token {
         return this.tokens[1] ?? new Token(TokenType.EOF, "EOF", 0, 0)
     }
 
-    eat(): Token {
+    private eat(): Token {
         return this.tokens.shift() ?? new Token(TokenType.EOF, "EOF", 0, 0)
     }
 
-    expect(type: TokenType, message: string): Token {
+    private expect(type: TokenType, message: string): Token {
         const token = this.at()
         if(token.type != type) {
             logError(token.line, token.colum, message)
