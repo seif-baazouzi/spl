@@ -1,0 +1,4 @@
+const x = 20
+const y = 20
+
+print x >= y

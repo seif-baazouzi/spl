@@ -103,6 +103,46 @@ export function handleBinaryExpression(expression: BinaryExpression, env: Enviro
             result.push(`.end_${getTokenPosition(expression.operation)}:`)
             break
         }
+        case TokenType.GRATER_THEN: {
+            result.push("cmp eax, ebx")
+            result.push(`jg .true_${getTokenPosition(expression.operation)}`)
+            result.push("mov eax, 0")
+            result.push(`jmp .end_${getTokenPosition(expression.operation)}`)
+            result.push(`.true_${getTokenPosition(expression.operation)}:`)
+            result.push("mov eax, 1")
+            result.push(`.end_${getTokenPosition(expression.operation)}:`)
+            break
+        }
+        case TokenType.GRATER_OR_EQUALS: {
+            result.push("cmp eax, ebx")
+            result.push(`jge .true_${getTokenPosition(expression.operation)}`)
+            result.push("mov eax, 0")
+            result.push(`jmp .end_${getTokenPosition(expression.operation)}`)
+            result.push(`.true_${getTokenPosition(expression.operation)}:`)
+            result.push("mov eax, 1")
+            result.push(`.end_${getTokenPosition(expression.operation)}:`)
+            break
+        }
+        case TokenType.LESS_THEN: {
+            result.push("cmp eax, ebx")
+            result.push(`jl .true_${getTokenPosition(expression.operation)}`)
+            result.push("mov eax, 0")
+            result.push(`jmp .end_${getTokenPosition(expression.operation)}`)
+            result.push(`.true_${getTokenPosition(expression.operation)}:`)
+            result.push("mov eax, 1")
+            result.push(`.end_${getTokenPosition(expression.operation)}:`)
+            break
+        }
+        case TokenType.LESS_OR_EQUALS: {
+            result.push("cmp eax, ebx")
+            result.push(`jle .true_${getTokenPosition(expression.operation)}`)
+            result.push("mov eax, 0")
+            result.push(`jmp .end_${getTokenPosition(expression.operation)}`)
+            result.push(`.true_${getTokenPosition(expression.operation)}:`)
+            result.push("mov eax, 1")
+            result.push(`.end_${getTokenPosition(expression.operation)}:`)
+            break
+        }
     }
 
     return {

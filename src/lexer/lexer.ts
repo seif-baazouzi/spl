@@ -5,7 +5,11 @@ import { isAlpha, isNumber, isWhitespace } from "~/lexer/lexer-helpers.ts"
 const lookupTokens: {[index: string]: TokenType} = {
     "==": TokenType.EQUALS_TO,
     "!=": TokenType.DEFERENT_TO,
-    
+    ">=": TokenType.GRATER_OR_EQUALS,
+    ">": TokenType.GRATER_THEN,
+    "<=": TokenType.LESS_OR_EQUALS,
+    "<": TokenType.LESS_THEN,
+
     "(": TokenType.OPEN_PAREN,
     ")": TokenType.CLOSE_PAREN,
     "=": TokenType.EQUAL,

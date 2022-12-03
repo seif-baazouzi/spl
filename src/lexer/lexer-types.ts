@@ -12,6 +12,10 @@ export enum TokenType {
 
     EQUALS_TO,
     DEFERENT_TO,
+    GRATER_THEN,
+    GRATER_OR_EQUALS,
+    LESS_THEN,
+    LESS_OR_EQUALS,
 
     OPEN_PAREN,
     CLOSE_PAREN,
