@@ -3,6 +3,7 @@ import { BinaryExpression, Boolean, Expression, Identifier, NodeType, Numerical 
 import { VariableType } from "~/parser/parser-types.ts"
 import { checkBinaryExpression } from "~/compiler/compiler-checks.ts"
 import { ExpressionValue, Environment } from "~/compiler/compiler-types.ts"
+import { getTokenPosition } from "~/compiler/compiler-helpers.ts"
 
 export function handleExpression(expression: Expression, env: Environment): ExpressionValue {
     switch(expression.kind) {
@@ -54,8 +55,8 @@ export function handleBinaryExpression(expression: BinaryExpression, env: Enviro
     const rightExpression = handleExpression(expression.right, env)
     const leftExpression = handleExpression(expression.left, env)
 
-    checkBinaryExpression(expression.operation, leftExpression.type, rightExpression.type)
-
+    const returnType = checkBinaryExpression(expression.operation, leftExpression.type, rightExpression.type)
+    
     result.push(rightExpression.assembly)
     result.push(leftExpression.assembly)
     result.push("pop ebx")
@@ -82,10 +83,20 @@ export function handleBinaryExpression(expression: BinaryExpression, env: Enviro
             result.push("mov eax, edx")
             break
         }
+        case TokenType.EQUALS_TO: {
+            result.push("cmp eax, ebx")
+            result.push(`jz .true_${getTokenPosition(expression.operation)}`)
+            result.push("mov eax, 0")
+            result.push(`jmp .end_${getTokenPosition(expression.operation)}`)
+            result.push(`.true_${getTokenPosition(expression.operation)}:`)
+            result.push("mov eax, 1")
+            result.push(`.end_${getTokenPosition(expression.operation)}:`)
+            break
+        }
     }
 
     return {
-        type: VariableType.NUMBER,
+        type: returnType,
         assembly: result.join("\n")
     } 
 }

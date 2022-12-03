@@ -3,6 +3,8 @@ import { TokenType, Token } from "~/lexer/lexer-types.ts"
 import { isAlpha, isNumber, isWhitespace } from "~/lexer/lexer-helpers.ts"
 
 const lookupTokens: {[index: string]: TokenType} = {
+    "==": TokenType.EQUALS_TO,
+    
     "(": TokenType.OPEN_PAREN,
     ")": TokenType.CLOSE_PAREN,
     "=": TokenType.EQUAL,
@@ -14,6 +16,7 @@ const lookupTokens: {[index: string]: TokenType} = {
     ":": TokenType.COLON,
     ";": TokenType.END_LINE,
     "\n": TokenType.END_LINE,
+
 
     "let": TokenType.LET,
     "const": TokenType.CONST,

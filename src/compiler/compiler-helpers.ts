@@ -1,3 +1,5 @@
+import { Token } from "../lexer/lexer-types.ts"
+
 export async function run(...cmd: string[]) {
     console.log(`[CMD] ${cmd.join(" ")}`)
     const process = Deno.run({cmd, stdout: "piped", stderr: "piped"})
@@ -15,4 +17,8 @@ export async function run(...cmd: string[]) {
     if(stderrStr) console.log(stderrStr)
         
     process.close()
+}
+
+export function getTokenPosition(token: Token): string {
+    return `${token.line}_${token.colum}`
 }

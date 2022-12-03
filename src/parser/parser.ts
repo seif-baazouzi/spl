@@ -71,7 +71,20 @@ export default class Parser {
     }
     
     parseExpression(): Expression {
-        return this.parseAddingStatement()
+        return this.parseLogicalStatement()
+    }
+
+    parseLogicalStatement(): Expression {
+        let left: Statement = this.parseAddingStatement()
+        
+        while(this.at().type === TokenType.EQUALS_TO) {
+            const operation = this.eat()
+            const right = this.parseAddingStatement()
+
+            left = new BinaryExpression(operation, left, right)
+        }
+
+        return left   
     }
 
     parseAddingStatement(): Expression {

@@ -9,6 +9,8 @@ export enum TokenType {
     MODULO,
     
     EQUAL,
+
+    EQUALS_TO,
     
     OPEN_PAREN,
     CLOSE_PAREN,
