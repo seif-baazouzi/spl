@@ -1,20 +1,21 @@
 export enum TokenType {
     NUMBER,
     IDENTIFIER,
-    
+
     PLUS,
     MINUS,
     MULTIPLY,
     DIVIDE,
     MODULO,
-    
+
     EQUAL,
 
     EQUALS_TO,
-    
+    DEFERENT_TO,
+
     OPEN_PAREN,
     CLOSE_PAREN,
-    
+
     END_LINE,
     EOF,
 

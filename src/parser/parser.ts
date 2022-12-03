@@ -77,7 +77,7 @@ export default class Parser {
     parseLogicalStatement(): Expression {
         let left: Statement = this.parseAddingStatement()
         
-        while(this.at().type === TokenType.EQUALS_TO) {
+        while(this.at().type === TokenType.EQUALS_TO || this.at().type === TokenType.DEFERENT_TO) {
             const operation = this.eat()
             const right = this.parseAddingStatement()
 

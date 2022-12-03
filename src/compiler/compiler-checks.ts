@@ -21,7 +21,8 @@ export function checkBinaryExpression(operation: Token, leftType: VariableType, 
 
             return VariableType.NUMBER
         }
-        case TokenType.EQUALS_TO: {
+        case TokenType.EQUALS_TO:
+        case TokenType.DEFERENT_TO: {
             if(leftType != rightType) {
                 logError(
                     operation.line,

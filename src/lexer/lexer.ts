@@ -4,6 +4,7 @@ import { isAlpha, isNumber, isWhitespace } from "~/lexer/lexer-helpers.ts"
 
 const lookupTokens: {[index: string]: TokenType} = {
     "==": TokenType.EQUALS_TO,
+    "!=": TokenType.DEFERENT_TO,
     
     "(": TokenType.OPEN_PAREN,
     ")": TokenType.CLOSE_PAREN,

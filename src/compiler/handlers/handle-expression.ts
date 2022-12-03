@@ -93,6 +93,16 @@ export function handleBinaryExpression(expression: BinaryExpression, env: Enviro
             result.push(`.end_${getTokenPosition(expression.operation)}:`)
             break
         }
+        case TokenType.DEFERENT_TO: {
+            result.push("cmp eax, ebx")
+            result.push(`jz .false_${getTokenPosition(expression.operation)}`)
+            result.push("mov eax, 1")
+            result.push(`jmp .end_${getTokenPosition(expression.operation)}`)
+            result.push(`.false_${getTokenPosition(expression.operation)}:`)
+            result.push("mov eax, 0")
+            result.push(`.end_${getTokenPosition(expression.operation)}:`)
+            break
+        }
     }
 
     return {
