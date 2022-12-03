@@ -143,6 +143,18 @@ export function handleBinaryExpression(expression: BinaryExpression, env: Enviro
             result.push(`.end_${getTokenPosition(expression.operation)}:`)
             break
         }
+        case TokenType.AND: {
+            result.push("and eax, ebx")
+            break
+        }
+        case TokenType.OR: {
+            result.push("or eax, ebx")
+            break
+        }
+        case TokenType.XOR: {
+            result.push("xor eax, ebx")
+            break
+        }
     }
 
     return {

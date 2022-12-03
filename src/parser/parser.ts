@@ -83,7 +83,10 @@ export default class Parser {
             this.at().type === TokenType.GRATER_OR_EQUALS ||
             this.at().type === TokenType.GRATER_THEN ||
             this.at().type === TokenType.LESS_OR_EQUALS ||
-            this.at().type === TokenType.LESS_THEN
+            this.at().type === TokenType.LESS_THEN ||
+            this.at().type === TokenType.AND ||
+            this.at().type === TokenType.OR ||
+            this.at().type === TokenType.XOR
         ) {
             const operation = this.eat()
             const right = this.parseAddingStatement()

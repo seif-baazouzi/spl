@@ -1,0 +1,4 @@
+const a = false
+const b = true
+
+print a xor b

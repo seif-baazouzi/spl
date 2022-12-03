@@ -16,6 +16,10 @@ export enum TokenType {
     GRATER_OR_EQUALS,
     LESS_THEN,
     LESS_OR_EQUALS,
+    
+    AND,
+    OR,
+    XOR,
 
     OPEN_PAREN,
     CLOSE_PAREN,

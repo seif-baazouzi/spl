@@ -22,6 +22,9 @@ const lookupTokens: {[index: string]: TokenType} = {
     ";": TokenType.END_LINE,
     "\n": TokenType.END_LINE,
 
+    "and": TokenType.AND,
+    "or": TokenType.OR,
+    "xor": TokenType.XOR,
 
     "let": TokenType.LET,
     "const": TokenType.CONST,

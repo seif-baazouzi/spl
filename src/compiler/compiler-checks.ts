@@ -49,6 +49,20 @@ export function checkBinaryExpression(operation: Token, leftType: VariableType, 
 
             return VariableType.BOOLEAN
         }
+        case TokenType.AND:
+        case TokenType.OR:
+        case TokenType.XOR: {
+            if(leftType != VariableType.BOOLEAN || rightType != VariableType.BOOLEAN) {
+                logError(
+                    operation.line,
+                    operation.colum,
+                    `Cannot compare ${typeToString(leftType)} and ${typeToString(rightType)}`
+                )
+                Deno.exit(1)
+            }
+
+            return VariableType.BOOLEAN
+        }
         default: {
             console.log(`DEBUG: Invalid operation ${operation}`)
             Deno.exit(1)
