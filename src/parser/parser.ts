@@ -6,58 +6,66 @@ import { getVariableType } from "~/parser/parser-helpers.ts"
 export default class Parser {
     constructor(
         private tokens: Token[]
-    ) {}
+    ) { }
 
     getAST(): Program {
         const program = new Program()
 
-        while(this.at().type != TokenType.EOF) {
+        while (this.at().type != TokenType.EOF) {
             program.body.push(this.parseStatement())
-            if(this.at().type == TokenType.END_LINE) this.eat()        
+            if (this.at().type == TokenType.END_LINE) this.eat()
         }
 
         return program
     }
 
     private parseStatement(): Statement {
-        switch(this.at().type) {
+        switch (this.at().type) {
             case TokenType.LET: {
                 this.eat() // eat let keyword
-                const variableName = this.expect(TokenType.IDENTIFIER, "Expected variable name after let keyword")           
-                
-                this.expect(TokenType.COLON, "Expected colon after variable name!")                
+                const variableName = this.expect(TokenType.IDENTIFIER, "Expected variable name after let keyword")
+
+                this.expect(TokenType.COLON, "Expected colon after variable name!")
                 const variableType = this.expect(TokenType.IDENTIFIER, "Expected variable type after variable name!")
-                
-                if(this.at().type == TokenType.EQUAL) {
+
+                if (this.at().type == TokenType.EQUAL) {
                     this.eat() // eat =
                     const expression = this.parseExpression()
+                    this.expectNewLine()
                     return new DeclareVariable(variableName, false, getVariableType(variableType), expression)
                 } else {
+                    this.expectNewLine()
                     return new DeclareVariable(variableName, false, getVariableType(variableType))
                 }
             }
             case TokenType.CONST: {
                 this.eat() // eat const keyword
-                const variableName = this.expect(TokenType.IDENTIFIER, "Expected constant name after const keyword")        
+                const variableName = this.expect(TokenType.IDENTIFIER, "Expected constant name after const keyword")
                 this.expect(TokenType.EQUAL, "Expected equal after constant name")
-                
+
                 const expression = this.parseExpression()
+                this.expectNewLine()
+
                 return new DeclareVariable(variableName, true, VariableType.CONSTANT, expression)
             }
-            case TokenType.IDENTIFIER: {                
-                if(this.next().type != TokenType.EQUAL) {
+            case TokenType.IDENTIFIER: {
+                if (this.next().type != TokenType.EQUAL) {
                     return this.parseExpression()
                 }
 
-                const variableName = this.eat()        
+                const variableName = this.eat()
                 this.eat() // eat =
-                
+
                 const expression = this.parseExpression()
+                this.expectNewLine()
+
                 return new AssignVariable(variableName, expression)
             }
             case TokenType.PRINT: {
                 this.eat() // eat print keyword
                 const expression = this.parseExpression()
+                this.expectNewLine()
+                
                 return new PrintStatement(expression)
             }
             case TokenType.END_LINE: {
@@ -65,21 +73,21 @@ export default class Parser {
                 return this.parseStatement()
             }
             default: {
-                return this.parseExpression()   
-            } 
-        } 
+                return this.parseExpression()
+            }
+        }
     }
-    
+
     private parseExpression(): Expression {
         return this.parseLogicalStatement()
     }
 
     private parseLogicalStatement(): Expression {
         let left: Statement = this.parseLogicalPrimary()
-        
-        while(
+
+        while (
             this.at().type === TokenType.AND ||
-            this.at().type === TokenType.OR  ||
+            this.at().type === TokenType.OR ||
             this.at().type === TokenType.XOR
         ) {
             const operation = this.eat()
@@ -88,13 +96,13 @@ export default class Parser {
             left = new BinaryExpression(operation, left, right)
         }
 
-        return left  
+        return left
     }
 
     private parseLogicalPrimary(): Expression {
         let left: Statement = this.parseAddingStatement()
-        
-        while(
+
+        while (
             this.at().type === TokenType.EQUALS_TO ||
             this.at().type === TokenType.DEFERENT_TO ||
             this.at().type === TokenType.GRATER_OR_EQUALS ||
@@ -108,13 +116,13 @@ export default class Parser {
             left = new BinaryExpression(operation, left, right)
         }
 
-        return left   
+        return left
     }
 
     private parseAddingStatement(): Expression {
         let left: Statement = this.parseMultiplyingStatement()
-        
-        while(this.at().type === TokenType.PLUS || this.at().type === TokenType.MINUS) {
+
+        while (this.at().type === TokenType.PLUS || this.at().type === TokenType.MINUS) {
             const operation = this.eat()
             const right = this.parseMultiplyingStatement()
 
@@ -127,7 +135,7 @@ export default class Parser {
     private parseMultiplyingStatement(): Expression {
         let left: Statement = this.parsePrimary()
 
-        while(this.at().type === TokenType.MULTIPLY || this.at().type === TokenType.DIVIDE || this.at().type === TokenType.MODULO) {
+        while (this.at().type === TokenType.MULTIPLY || this.at().type === TokenType.DIVIDE || this.at().type === TokenType.MODULO) {
             const operation = this.eat()
             const right = this.parsePrimary()
 
@@ -136,11 +144,11 @@ export default class Parser {
 
         return left
     }
-    
+
     private parsePrimary(): Expression {
         const token = this.at()
 
-        switch(token.type) {
+        switch (token.type) {
             case TokenType.NUMBER: {
                 return new Numerical(NodeType.NUMBER, this.eat())
             }
@@ -165,10 +173,10 @@ export default class Parser {
             default: {
                 logError(token.line, token.colum, `Unexpected token ${token.value}`)
                 Deno.exit(1)
-            }            
+            }
         }
     }
-    
+
     private at(): Token {
         return this.tokens[0] ?? new Token(TokenType.EOF, "EOF", 0, 0)
     }
@@ -183,11 +191,19 @@ export default class Parser {
 
     private expect(type: TokenType, message: string): Token {
         const token = this.at()
-        if(token.type != type) {
+        if (token.type != type) {
             logError(token.line, token.colum, message)
             Deno.exit(1)
         }
 
         return this.tokens.shift() as Token
+    }
+
+    private expectNewLine() {
+        const token = this.at()
+
+        if(token.type != TokenType.END_LINE && token.type != TokenType.EOF) {
+            logError(token.line, token.colum, `Expected token ';' or new line but got ${token.value}!`)
+        }
     }
 }
