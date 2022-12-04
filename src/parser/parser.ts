@@ -1,5 +1,5 @@
 import { Token, TokenType } from "~/lexer/lexer-types.ts"
-import { NodeType, Statement, BinaryExpression, Numerical, Identifier, Program, Expression, PrintStatement, DeclareVariable, AssignVariable, Boolean, VariableType, IfStatement } from "~/parser/parser-types.ts"
+import { NodeType, Statement, BinaryExpression, Numerical, Identifier, Program, Expression, PrintStatement, DeclareVariable, AssignVariable, Boolean, VariableType, IfStatement, IfStatementBlock } from "~/parser/parser-types.ts"
 import logError from "~/utils/log-error.ts"
 import { getVariableType } from "~/parser/parser-helpers.ts"
 
@@ -70,18 +70,49 @@ export default class Parser {
                 return new PrintStatement(expression)
             }
             case TokenType.IF: {
-                const ifToken = this.eat()
-                const condition = this.parseExpression()
-                this.expect(TokenType.COLON, "Expected colon and if statement condition")
+                const blocks: IfStatementBlock[] = []
                 
+                // parse if
+                const ifToken = this.eat()
+                const ifCondition = this.parseExpression()
+                this.expect(TokenType.COLON, "Expected colon and if statement condition")
+
                 const ifBlock: Statement[] = []
-                while(this.at().type != TokenType.ELSE && this.at().type != TokenType.END_IF && this.at().type != TokenType.EOF) {
+                while(
+                    this.at().type != TokenType.ELSE &&
+                    this.at().type != TokenType.ELIF &&
+                    this.at().type != TokenType.END_IF &&
+                    this.at().type != TokenType.EOF
+                ) {
                     const statement = this.parseStatement()
                     if(statement) ifBlock.push(statement)
                 }
+
+                blocks.push({token: ifToken, block: ifBlock, condition: ifCondition})
                 
+                // parse elif
+                while(this.at().type == TokenType.ELIF) {
+                    const elifToken = this.eat() // eat elif keyword
+                    const elifCondition = this.parseExpression()
+                    this.expect(TokenType.COLON, "Expected colon and elif statement condition")
+                    
+                    const elifBlock: Statement[] = []
+                    while(
+                        this.at().type != TokenType.ELSE &&
+                        this.at().type != TokenType.ELIF &&
+                        this.at().type != TokenType.END_IF &&
+                        this.at().type != TokenType.EOF
+                    ) {
+                        const statement = this.parseStatement()
+                        if(statement) elifBlock.push(statement)
+                    }
+
+                    blocks.push({token: elifToken, block: elifBlock, condition: elifCondition})
+                }
+
+                // parse else
                 if(this.at().type == TokenType.ELSE) {
-                    const elseToken = this.eat()
+                    const elseToken = this.eat() // eat else keyword
                     this.expect(TokenType.COLON, "Expected colon and else statement")
 
                     const elseBlock: Statement[] = []
@@ -90,12 +121,11 @@ export default class Parser {
                         if(statement) elseBlock.push(statement)
                     }
 
-                    this.expect(TokenType.END_IF, "Expected endif after else statement block")
-                    return new IfStatement(ifToken, condition, ifBlock, elseToken, elseBlock)
-                } else {
-                    this.expect(TokenType.END_IF, "Expected endif after if statement block")
-                    return new IfStatement(ifToken, condition, ifBlock)
-                }                
+                    blocks.push({ token: elseToken, block: elseBlock })
+                }
+                
+                this.expect(TokenType.END_IF, "Expected endif after else statement block")
+                return new IfStatement(blocks)
             }
             case TokenType.END_LINE: {
                 this.eat()

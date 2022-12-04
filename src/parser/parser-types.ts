@@ -93,14 +93,14 @@ export class Boolean extends Expression {
     }
 }
 
+export interface IfStatementBlock {
+    token: Token,
+    condition?: Expression,
+    block: Statement[],
+}
+
 export class IfStatement extends Expression {
-    constructor(
-        public ifToken: Token,
-        public condition: Expression,
-        public ifBlock: Statement[],
-        public elseToken?: Token,
-        public elseBlock?: Statement[],
-    ) {
+    constructor(public blocks: IfStatementBlock[]) {
         super(NodeType.IF_STATEMENT)
     }
 }

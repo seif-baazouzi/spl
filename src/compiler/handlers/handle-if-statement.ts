@@ -1,49 +1,44 @@
 import { IfStatement, VariableType } from "~/parser/parser-types.ts";
 import { Environment } from "~/compiler/compiler-types.ts";
-import { handleExpression } from "./handle-expression.ts";
+import { handleExpression } from "~/compiler/handlers/handle-expression.ts";
 import logError from "~/utils/log-error.ts";
 import { handleStatement } from "~/compiler/handlers/handle-statement.ts";
-import { getTokenPosition } from "../compiler-helpers.ts";
+import { getTokenPosition } from "~/compiler/compiler-helpers.ts";
 
 export default function handleIfStatement(statement: IfStatement, env: Environment): string {
     const assembly: string[] = []
-    
-    // condition type must be of boolean type
-    const condition = handleExpression(statement.condition, env)
-    if(condition.type != VariableType.BOOLEAN) {
-        logError(
-            statement.ifToken.line,
-            statement.ifToken.colum,
-            "Non boolean condition in if statement!"
-        )
-        Deno.exit(1)
-    }
+    const ifToken = statement.blocks[0].token
 
-    // condition
-    assembly.push(condition.assembly)
-    assembly.push(`cmp eax, 0`)
-    if(statement.elseToken) {
-        assembly.push(`jz .else_${getTokenPosition(statement.ifToken)}`)
-    } else {
-        assembly.push(`jz .endif_${getTokenPosition(statement.ifToken)}`)
-    }
+    statement.blocks.forEach((block, index) => {
+        assembly.push(`.if_block_${index}_${getTokenPosition(ifToken)}:`)
+        
+        if(block.condition) {
+            // condition type must be of boolean type
+            const condition = handleExpression(block.condition, env)
+            if(condition.type != VariableType.BOOLEAN) {
+                logError(
+                    block.token.line,
+                    block.token.colum,
+                    `Non boolean condition in ${index === 0 ? "if" : "elif"} statement!`
+                )
+                Deno.exit(1)
+            }
     
-    // if block
-    const ifStatementEnv = new Environment(env)
-    for(const st of statement.ifBlock) {
-        assembly.push(handleStatement(st, ifStatementEnv))
-    }
-    if(statement.elseBlock) assembly.push(`jmp .endif_${getTokenPosition(statement.ifToken)}`)
-    
-    // else block
-    if(statement.elseBlock) {
-        assembly.push(`.else_${getTokenPosition(statement.ifToken)}:`)
-        for(const st of statement.elseBlock) {
-            assembly.push(handleStatement(st, ifStatementEnv))
+            // condition
+            assembly.push(condition.assembly)
+            assembly.push(`cmp eax, 0`)
+            assembly.push(`jz .if_block_${index+1}_${getTokenPosition(ifToken)}`)
         }
-    }
 
-    assembly.push(`.endif_${getTokenPosition(statement.ifToken)}:`)
+        // block
+        const blockEnv = new Environment(env)
+        for(const st of block.block) {
+            assembly.push(handleStatement(st, blockEnv))
+        }
+        assembly.push(`jmp .endif_${getTokenPosition(ifToken)}`)
+    })
+
+    assembly.push(`.endif_${getTokenPosition(ifToken)}:`)
 
     return assembly.join("\n")
 }

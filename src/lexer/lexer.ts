@@ -33,6 +33,7 @@ const lookupTokens: {[index: string]: TokenType} = {
     "false": TokenType.FALSE,
 
     "if": TokenType.IF,
+    "elif": TokenType.ELIF,
     "else": TokenType.ELSE,
     "endif": TokenType.END_IF,
 }
