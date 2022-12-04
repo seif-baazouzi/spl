@@ -74,15 +74,28 @@ export default class Parser {
                 const condition = this.parseExpression()
                 this.expect(TokenType.COLON, "Expected colon and if statement condition")
                 
-                const block: Statement[] = []
-                while(this.at().type != TokenType.END_IF && this.at().type != TokenType.EOF) {
+                const ifBlock: Statement[] = []
+                while(this.at().type != TokenType.ELSE && this.at().type != TokenType.END_IF && this.at().type != TokenType.EOF) {
                     const statement = this.parseStatement()
-                    if(statement) block.push(statement)
+                    if(statement) ifBlock.push(statement)
                 }
                 
-                this.expect(TokenType.END_IF, "Expected endif after if statement block")
-                
-                return new IfStatement(ifToken, condition, block)
+                if(this.at().type == TokenType.ELSE) {
+                    const elseToken = this.eat()
+                    this.expect(TokenType.COLON, "Expected colon and else statement")
+
+                    const elseBlock: Statement[] = []
+                    while(this.at().type != TokenType.END_IF && this.at().type != TokenType.EOF) {
+                        const statement = this.parseStatement()
+                        if(statement) elseBlock.push(statement)
+                    }
+
+                    this.expect(TokenType.END_IF, "Expected endif after else statement block")
+                    return new IfStatement(ifToken, condition, ifBlock, elseToken, elseBlock)
+                } else {
+                    this.expect(TokenType.END_IF, "Expected endif after if statement block")
+                    return new IfStatement(ifToken, condition, ifBlock)
+                }                
             }
             case TokenType.END_LINE: {
                 this.eat()

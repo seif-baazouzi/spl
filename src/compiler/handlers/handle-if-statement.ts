@@ -12,23 +12,38 @@ export default function handleIfStatement(statement: IfStatement, env: Environme
     const condition = handleExpression(statement.condition, env)
     if(condition.type != VariableType.BOOLEAN) {
         logError(
-            statement.token.line,
-            statement.token.colum,
+            statement.ifToken.line,
+            statement.ifToken.colum,
             "Non boolean condition in if statement!"
         )
         Deno.exit(1)
     }
 
+    // condition
     assembly.push(condition.assembly)
     assembly.push(`cmp eax, 0`)
-    assembly.push(`jz .endif_${getTokenPosition(statement.token)}`)
+    if(statement.elseToken) {
+        assembly.push(`jz .else_${getTokenPosition(statement.ifToken)}`)
+    } else {
+        assembly.push(`jz .endif_${getTokenPosition(statement.ifToken)}`)
+    }
     
-    // get block assembly
+    // if block
     const ifStatementEnv = new Environment(env)
-    for(const st of statement.block) {
+    for(const st of statement.ifBlock) {
         assembly.push(handleStatement(st, ifStatementEnv))
     }
-    assembly.push(`.endif_${getTokenPosition(statement.token)}:`)
+    if(statement.elseBlock) assembly.push(`jmp .endif_${getTokenPosition(statement.ifToken)}`)
+    
+    // else block
+    if(statement.elseBlock) {
+        assembly.push(`.else_${getTokenPosition(statement.ifToken)}:`)
+        for(const st of statement.elseBlock) {
+            assembly.push(handleStatement(st, ifStatementEnv))
+        }
+    }
+
+    assembly.push(`.endif_${getTokenPosition(statement.ifToken)}:`)
 
     return assembly.join("\n")
 }

@@ -94,7 +94,13 @@ export class Boolean extends Expression {
 }
 
 export class IfStatement extends Expression {
-    constructor(public token: Token, public condition: Expression, public block: Statement[]) {
+    constructor(
+        public ifToken: Token,
+        public condition: Expression,
+        public ifBlock: Statement[],
+        public elseToken?: Token,
+        public elseBlock?: Statement[],
+    ) {
         super(NodeType.IF_STATEMENT)
     }
 }

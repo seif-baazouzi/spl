@@ -37,6 +37,7 @@ export enum TokenType {
     PRINT,
 
     IF,
+    ELSE,
     END_IF,
 }
 
