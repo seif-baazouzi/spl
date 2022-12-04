@@ -1,5 +1,5 @@
 import { Token, TokenType } from "~/lexer/lexer-types.ts"
-import { NodeType, Statement, BinaryExpression, Numerical, Identifier, Program, Expression, PrintStatement, DeclareVariable, AssignVariable, Boolean, VariableType } from "~/parser/parser-types.ts"
+import { NodeType, Statement, BinaryExpression, Numerical, Identifier, Program, Expression, PrintStatement, DeclareVariable, AssignVariable, Boolean, VariableType, IfStatement } from "~/parser/parser-types.ts"
 import logError from "~/utils/log-error.ts"
 import { getVariableType } from "~/parser/parser-helpers.ts"
 
@@ -12,14 +12,15 @@ export default class Parser {
         const program = new Program()
 
         while (this.at().type != TokenType.EOF) {
-            program.body.push(this.parseStatement())
+            const statement = this.parseStatement()
+            if(statement) program.body.push(statement)
             if (this.at().type == TokenType.END_LINE) this.eat()
         }
 
         return program
     }
 
-    private parseStatement(): Statement {
+    private parseStatement(): Statement|undefined {
         switch (this.at().type) {
             case TokenType.LET: {
                 this.eat() // eat let keyword
@@ -68,9 +69,24 @@ export default class Parser {
                 
                 return new PrintStatement(expression)
             }
+            case TokenType.IF: {
+                const ifToken = this.eat()
+                const condition = this.parseExpression()
+                this.expect(TokenType.COLON, "Expected colon and if statement condition")
+                
+                const block: Statement[] = []
+                while(this.at().type != TokenType.END_IF && this.at().type != TokenType.EOF) {
+                    const statement = this.parseStatement()
+                    if(statement) block.push(statement)
+                }
+                
+                this.expect(TokenType.END_IF, "Expected endif after if statement block")
+                
+                return new IfStatement(ifToken, condition, block)
+            }
             case TokenType.END_LINE: {
                 this.eat()
-                return this.parseStatement()
+                return
             }
             default: {
                 return this.parseExpression()
@@ -165,7 +181,7 @@ export default class Parser {
             }
             case TokenType.OPEN_PAREN: {
                 this.eat()
-                const value = this.parseStatement()
+                const value = this.parseExpression()
                 this.expect(TokenType.CLOSE_PAREN, "Expected token )")
 
                 return value

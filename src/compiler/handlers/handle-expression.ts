@@ -43,7 +43,7 @@ export function handleExpression(expression: Expression, env: Environment): Expr
             return handleBinaryExpression(st, env)
         }
         default: {
-            console.log(`DEBUG: Unexpected NodeType ${expression}`)
+            console.log(`DEBUG: Unexpected NodeType `, expression)
             Deno.exit(1)
         }
     }

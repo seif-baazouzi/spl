@@ -38,12 +38,16 @@ export class Environment {
     }
 
     getVariable(variableName: Token): Variable {
-        if(!this.hasVariable(variableName.value)) {
-            logError(variableName.line, variableName.colum, `Error: Variable ${variableName.value} is not declared!`)
-            Deno.exit(1)
+        if(this.variables.has(variableName.value)) {
+            return this.variables.get(variableName.value) as Variable
         }
 
-        return this.variables.get(variableName.value) as Variable
+        if(this.parent?.hasVariable(variableName.value)) {
+            return this.parent.getVariable(variableName) as Variable
+        }
+
+        logError(variableName.line, variableName.colum, `Error: Variable ${variableName.value} is not declared!`)
+        Deno.exit(1)
     }
 
     hasVariable(varName: string): boolean {

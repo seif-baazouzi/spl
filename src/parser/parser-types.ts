@@ -10,6 +10,7 @@ export enum NodeType {
     DECLARE_VARIABLE,
     ASSIGN_VARIABLE,
     VARIABLE_TYPE,
+    IF_STATEMENT,
 }
 
 export enum VariableType {
@@ -48,7 +49,12 @@ export class PrintStatement extends Statement {
 }
 
 export class DeclareVariable extends Statement {    
-    constructor(public name: Token, public isConstant: boolean = false, public type: VariableType, public expression?: Expression) {
+    constructor(
+        public name: Token,
+        public isConstant: boolean,
+        public type: VariableType,
+        public expression?: Expression
+    ) {
         super(NodeType.DECLARE_VARIABLE)
     }
 }
@@ -70,27 +76,25 @@ export class BinaryExpression extends Statement {
 }
 
 export class Identifier extends Expression {
-    constructor(
-        public kind: NodeType,
-        public symbol: Token,
-    ) {
+    constructor(public kind: NodeType, public symbol: Token) {
         super(kind)
     }
 }
 
 export class Numerical extends Expression {
-    constructor(
-        public kind: NodeType,
-        public number: Token,
-    ) {
+    constructor(public kind: NodeType, public number: Token) {
         super(kind)
     }
 }
 
 export class Boolean extends Expression {
-    constructor(
-        public value: boolean,
-    ) {
+    constructor(public value: boolean) {
         super(NodeType.BOOLEAN)
+    }
+}
+
+export class IfStatement extends Expression {
+    constructor(public token: Token, public condition: Expression, public block: Statement[]) {
+        super(NodeType.IF_STATEMENT)
     }
 }

@@ -31,6 +31,9 @@ const lookupTokens: {[index: string]: TokenType} = {
     "print": TokenType.PRINT,
     "true": TokenType.TRUE,
     "false": TokenType.FALSE,
+
+    "if": TokenType.IF,
+    "endif": TokenType.END_IF,
 }
 
 export default class Lexer {

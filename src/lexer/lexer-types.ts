@@ -35,6 +35,9 @@ export enum TokenType {
     LET,
     CONST,
     PRINT,
+
+    IF,
+    END_IF,
 }
 
 export class Token {
