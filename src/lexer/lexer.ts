@@ -41,6 +41,7 @@ const lookupTokens: {[index: string]: TokenType} = {
     "endwhile": TokenType.END_WHILE,
 
     "break": TokenType.BREAK,
+    "continue": TokenType.CONTINUE,
 }
 
 export default class Lexer {

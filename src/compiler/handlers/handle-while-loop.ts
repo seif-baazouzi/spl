@@ -34,7 +34,14 @@ export default function handleWhileLoop(statement: WhileLoop, env: Environment):
                 blockAssembly.push(`jmp .endwhile_${getTokenPosition(statement.whileToken)}`)
                 break;
             default:
-                blockAssembly.push(handleStatement(st, blockEnv, `.endwhile_${getTokenPosition(statement.whileToken)}`))
+                blockAssembly.push(
+                    handleStatement(
+                        st,
+                        blockEnv, 
+                        `.while_condition_${getTokenPosition(statement.whileToken)}`,
+                        `.endwhile_${getTokenPosition(statement.whileToken)}`
+                    )
+                )
         }
     }
     

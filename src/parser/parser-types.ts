@@ -13,6 +13,7 @@ export enum NodeType {
     IF_STATEMENT,
     WHILE_LOOP,
     BREAK,
+    CONTINUE,
 }
 
 export enum VariableType {
@@ -116,5 +117,11 @@ export class WhileLoop extends Expression {
 export class BreakKeyword extends Statement {
     constructor(public breakToken: Token) {
         super(NodeType.BREAK)
+    }
+}
+
+export class ContinueKeyword extends Statement {
+    constructor(public breakToken: Token) {
+        super(NodeType.CONTINUE)
     }
 }

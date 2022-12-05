@@ -45,6 +45,7 @@ export enum TokenType {
     END_WHILE,
 
     BREAK,
+    CONTINUE,
 }
 
 export class Token {

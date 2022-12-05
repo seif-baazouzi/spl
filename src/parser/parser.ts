@@ -1,5 +1,5 @@
 import { Token, TokenType } from "~/lexer/lexer-types.ts"
-import { NodeType, Statement, BinaryExpression, Numerical, Identifier, Program, Expression, PrintStatement, DeclareVariable, AssignVariable, Boolean, VariableType, IfStatement, IfStatementBlock, WhileLoop, BreakKeyword } from "~/parser/parser-types.ts"
+import { NodeType, Statement, BinaryExpression, Numerical, Identifier, Program, Expression, PrintStatement, DeclareVariable, AssignVariable, Boolean, VariableType, IfStatement, IfStatementBlock, WhileLoop, BreakKeyword, ContinueKeyword } from "~/parser/parser-types.ts"
 import logError from "~/utils/log-error.ts"
 import { getVariableType } from "~/parser/parser-helpers.ts"
 
@@ -155,6 +155,14 @@ export default class Parser {
                 }
 
                 return new BreakKeyword(this.eat())
+            }
+            case TokenType.CONTINUE: {
+                if(!this.isInLoop) {
+                    logError(this.at().line, this.at().colum, `Unexpected token continue outside of loop`)
+                    Deno.exit(1)
+                }
+
+                return new ContinueKeyword(this.eat())
             }
             case TokenType.END_LINE: {
                 this.eat()
