@@ -27,15 +27,25 @@ export default function handleIfStatement(statement: IfStatement, env: Environme
             // condition
             assembly.push(condition.assembly)
             assembly.push(`cmp eax, 0`)
-            assembly.push(`jz .if_block_${index+1}_${getTokenPosition(ifToken)}`)
+            
+            if(index === statement.blocks.length-1) {
+                assembly.push(`jz .endif_${getTokenPosition(ifToken)}`)
+            } else {
+                assembly.push(`jz .if_block_${index+1}_${getTokenPosition(ifToken)}`)
+            }
         }
 
         // block
         const blockEnv = new Environment(env)
+        const blockAssembly: string[] = []
         for(const st of block.block) {
-            assembly.push(handleStatement(st, blockEnv))
+            blockAssembly.push(handleStatement(st, blockEnv))
         }
+        
+        assembly.push(`add esp, ${blockEnv.getVariablesCount()*4}`)
+        assembly.push(blockAssembly.join("\n"))
         assembly.push(`jmp .endif_${getTokenPosition(ifToken)}`)
+        assembly.push(`sub esp, ${blockEnv.getVariablesCount()*4}`)
     })
 
     assembly.push(`.endif_${getTokenPosition(ifToken)}:`)

@@ -19,7 +19,11 @@ export class Environment {
     private variables: Map<string, Variable> = new Map()
     private constants: Set<string> = new Set()
 
-    constructor(private parent?: Environment) {}
+    constructor(private parent?: Environment) {
+        if(parent) {
+            this.index = parent.index
+        }
+    }
     
     declareVariable(st: DeclareVariable): number {
         if(this.hasVariable(st.name.value)) {
