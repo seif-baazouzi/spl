@@ -1,4 +1,4 @@
-import { VariableType, WhileLoop } from "~/parser/parser-types.ts"
+import { NodeType, VariableType, WhileLoop } from "~/parser/parser-types.ts"
 import { Environment } from "~/compiler/compiler-types.ts"
 import { getTokenPosition } from "~/compiler/compiler-helpers.ts"
 import { handleExpression } from "./handle-expression.ts";
@@ -29,7 +29,13 @@ export default function handleWhileLoop(statement: WhileLoop, env: Environment):
     const blockEnv = new Environment(env)
     const blockAssembly: string[] = []
     for(const st of statement.block) {
-        blockAssembly.push(handleStatement(st, blockEnv))
+        switch(st.kind) {
+            case NodeType.BREAK:
+                blockAssembly.push(`jmp .endwhile_${getTokenPosition(statement.whileToken)}`)
+                break;
+            default:
+                blockAssembly.push(handleStatement(st, blockEnv, `.endwhile_${getTokenPosition(statement.whileToken)}`))
+        }
     }
     
     assembly.push(`add esp, ${blockEnv.getVariablesCount()*4}`)

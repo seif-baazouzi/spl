@@ -5,7 +5,7 @@ import logError from "~/utils/log-error.ts";
 import { handleStatement } from "~/compiler/handlers/handle-statement.ts";
 import { getTokenPosition } from "~/compiler/compiler-helpers.ts";
 
-export default function handleIfStatement(statement: IfStatement, env: Environment): string {
+export default function handleIfStatement(statement: IfStatement, env: Environment, loopLabel?: string): string {
     const assembly: string[] = []
     const ifToken = statement.blocks[0].token
 
@@ -39,7 +39,7 @@ export default function handleIfStatement(statement: IfStatement, env: Environme
         const blockEnv = new Environment(env)
         const blockAssembly: string[] = []
         for(const st of block.block) {
-            blockAssembly.push(handleStatement(st, blockEnv))
+            blockAssembly.push(handleStatement(st, blockEnv, loopLabel))
         }
         
         assembly.push(`add esp, ${blockEnv.getVariablesCount()*4}`)

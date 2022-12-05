@@ -1,0 +1,10 @@
+let i: number = 0
+
+while true:
+    i = i + 1
+    print i
+
+    if i == 10:
+        break
+    endif
+endwhile

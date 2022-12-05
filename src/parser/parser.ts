@@ -1,9 +1,11 @@
 import { Token, TokenType } from "~/lexer/lexer-types.ts"
-import { NodeType, Statement, BinaryExpression, Numerical, Identifier, Program, Expression, PrintStatement, DeclareVariable, AssignVariable, Boolean, VariableType, IfStatement, IfStatementBlock, WhileLoop } from "~/parser/parser-types.ts"
+import { NodeType, Statement, BinaryExpression, Numerical, Identifier, Program, Expression, PrintStatement, DeclareVariable, AssignVariable, Boolean, VariableType, IfStatement, IfStatementBlock, WhileLoop, BreakKeyword } from "~/parser/parser-types.ts"
 import logError from "~/utils/log-error.ts"
 import { getVariableType } from "~/parser/parser-helpers.ts"
 
 export default class Parser {
+    private isInLoop = false
+
     constructor(
         private tokens: Token[]
     ) { }
@@ -133,13 +135,26 @@ export default class Parser {
                 this.expect(TokenType.COLON, "Expected colon and while loop condition")
 
                 const block: Statement[] = []
-                while(this.at().type != TokenType.END_WHILE && this.at().type != TokenType.EOF) {
+                const isInLoopOldValue = this.isInLoop
+                this.isInLoop = true
+
+                while(this.at().type != TokenType.END_WHILE && this.at().type != TokenType.EOF) {                    
                     const statement = this.parseStatement()
                     if(statement) block.push(statement)
                 }
+
+                this.isInLoop = isInLoopOldValue
                 
                 this.expect(TokenType.END_WHILE, "Expected endwhile after while loop block")
                 return new WhileLoop(whileToken, condition, block)
+            }
+            case TokenType.BREAK: {
+                if(!this.isInLoop) {
+                    logError(this.at().line, this.at().colum, `Unexpected token break outside of loop`)
+                    Deno.exit(1)
+                }
+
+                return new BreakKeyword(this.eat())
             }
             case TokenType.END_LINE: {
                 this.eat()

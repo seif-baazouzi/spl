@@ -7,13 +7,13 @@ import handlePrint from "~/compiler/handlers/handle-print.ts"
 import handleIfStatement from "~/compiler/handlers/handle-if-statement.ts"
 import handleWhileLoop from "~/compiler/handlers/handle-while-loop.ts";
 
-export function handleStatement(statement: Statement, env: Environment): string {
+export function handleStatement(statement: Statement, env: Environment, loopLabel?: string): string {
     switch(statement.kind) {
-        case NodeType.DECLARE_VARIABLE: {            
+        case NodeType.DECLARE_VARIABLE: {
             const st = statement as DeclareVariable
             return handleDeclareVariable(st, env)
         }
-        case NodeType.ASSIGN_VARIABLE: {            
+        case NodeType.ASSIGN_VARIABLE: {
             const st = statement as AssignVariable
             return handleAssignVariable(st, env)
         }
@@ -23,11 +23,14 @@ export function handleStatement(statement: Statement, env: Environment): string 
         }
         case NodeType.IF_STATEMENT: {
             const st = statement as IfStatement
-            return handleIfStatement(st, env)
+            return handleIfStatement(st, env, loopLabel)
         }
         case NodeType.WHILE_LOOP: {
             const st = statement as WhileLoop
             return handleWhileLoop(st, env)
+        }
+        case NodeType.BREAK: {
+            return `jmp ${loopLabel}`
         }
         default: {
             const st = statement as Expression
