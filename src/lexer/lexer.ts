@@ -36,6 +36,9 @@ const lookupTokens: {[index: string]: TokenType} = {
     "elif": TokenType.ELIF,
     "else": TokenType.ELSE,
     "endif": TokenType.END_IF,
+
+    "while": TokenType.WHILE,
+    "endwhile": TokenType.END_WHILE,
 }
 
 export default class Lexer {

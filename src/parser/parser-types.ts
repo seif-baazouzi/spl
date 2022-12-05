@@ -11,6 +11,7 @@ export enum NodeType {
     ASSIGN_VARIABLE,
     VARIABLE_TYPE,
     IF_STATEMENT,
+    WHILE_LOOP,
 }
 
 export enum VariableType {
@@ -102,5 +103,11 @@ export interface IfStatementBlock {
 export class IfStatement extends Expression {
     constructor(public blocks: IfStatementBlock[]) {
         super(NodeType.IF_STATEMENT)
+    }
+}
+
+export class WhileLoop extends Expression {
+    constructor(public whileToken: Token, public condition: Expression, public block: Statement[]) {
+        super(NodeType.WHILE_LOOP)
     }
 }

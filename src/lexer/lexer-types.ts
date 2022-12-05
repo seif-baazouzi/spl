@@ -40,6 +40,9 @@ export enum TokenType {
     ELIF,
     ELSE,
     END_IF,
+
+    WHILE,
+    END_WHILE,
 }
 
 export class Token {

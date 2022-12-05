@@ -1,5 +1,5 @@
 import { Token, TokenType } from "~/lexer/lexer-types.ts"
-import { NodeType, Statement, BinaryExpression, Numerical, Identifier, Program, Expression, PrintStatement, DeclareVariable, AssignVariable, Boolean, VariableType, IfStatement, IfStatementBlock } from "~/parser/parser-types.ts"
+import { NodeType, Statement, BinaryExpression, Numerical, Identifier, Program, Expression, PrintStatement, DeclareVariable, AssignVariable, Boolean, VariableType, IfStatement, IfStatementBlock, WhileLoop } from "~/parser/parser-types.ts"
 import logError from "~/utils/log-error.ts"
 import { getVariableType } from "~/parser/parser-helpers.ts"
 
@@ -126,6 +126,20 @@ export default class Parser {
                 
                 this.expect(TokenType.END_IF, "Expected endif after else statement block")
                 return new IfStatement(blocks)
+            }
+            case TokenType.WHILE: {                
+                const whileToken = this.eat()
+                const condition = this.parseExpression()
+                this.expect(TokenType.COLON, "Expected colon and while loop condition")
+
+                const block: Statement[] = []
+                while(this.at().type != TokenType.END_WHILE && this.at().type != TokenType.EOF) {
+                    const statement = this.parseStatement()
+                    if(statement) block.push(statement)
+                }
+                
+                this.expect(TokenType.END_WHILE, "Expected endwhile after while loop block")
+                return new WhileLoop(whileToken, condition, block)
             }
             case TokenType.END_LINE: {
                 this.eat()

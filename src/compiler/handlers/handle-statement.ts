@@ -1,10 +1,11 @@
-import { AssignVariable, DeclareVariable, PrintStatement, Expression, NodeType, Statement, VariableType, IfStatement } from "~/parser/parser-types.ts"
+import { AssignVariable, DeclareVariable, PrintStatement, Expression, NodeType, Statement, VariableType, IfStatement, WhileLoop } from "~/parser/parser-types.ts"
 import handleDeclareVariable from "~/compiler/handlers/handle-declare-variable.ts"
 import { handleExpression } from "~/compiler/handlers/handle-expression.ts"
 import { Environment } from "~/compiler/compiler-types.ts"
 import handleAssignVariable from "~/compiler/handlers/handle-assign-variable.ts"
 import handlePrint from "~/compiler/handlers/handle-print.ts"
 import handleIfStatement from "~/compiler/handlers/handle-if-statement.ts"
+import handleWhileLoop from "~/compiler/handlers/handle-while-loop.ts";
 
 export function handleStatement(statement: Statement, env: Environment): string {
     switch(statement.kind) {
@@ -23,6 +24,10 @@ export function handleStatement(statement: Statement, env: Environment): string 
         case NodeType.IF_STATEMENT: {
             const st = statement as IfStatement
             return handleIfStatement(st, env)
+        }
+        case NodeType.WHILE_LOOP: {
+            const st = statement as WhileLoop
+            return handleWhileLoop(st, env)
         }
         default: {
             const st = statement as Expression
