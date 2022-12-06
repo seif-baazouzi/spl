@@ -1,5 +1,5 @@
 import { Token, TokenType } from "~/lexer/lexer-types.ts"
-import { NodeType, Statement, BinaryExpression, Numerical, Identifier, Program, Expression, PrintStatement, DeclareVariable, AssignVariable, Boolean, VariableType, IfStatement, IfStatementBlock, WhileLoop, BreakKeyword, ContinueKeyword } from "~/parser/parser-types.ts"
+import { NodeType, Statement, BinaryExpression, Numerical, Identifier, Program, Expression, PrintStatement, DeclareVariable, AssignVariable, Boolean, VariableType, IfStatement, IfStatementBlock, WhileLoop, BreakKeyword, ContinueKeyword, ForLoop } from "~/parser/parser-types.ts"
 import logError from "~/utils/log-error.ts"
 import { getVariableType } from "~/parser/parser-helpers.ts"
 
@@ -22,7 +22,7 @@ export default class Parser {
         return program
     }
 
-    private parseStatement(): Statement|undefined {
+    private parseStatement(notEndOfLine = false): Statement|undefined {
         switch (this.at().type) {
             case TokenType.LET: {
                 this.eat() // eat let keyword
@@ -34,10 +34,10 @@ export default class Parser {
                 if (this.at().type == TokenType.EQUAL) {
                     this.eat() // eat =
                     const expression = this.parseExpression()
-                    this.expectNewLine()
+                    if(notEndOfLine) this.expectNewLine()
                     return new DeclareVariable(variableName, false, getVariableType(variableType), expression)
                 } else {
-                    this.expectNewLine()
+                    if(notEndOfLine) this.expectNewLine()
                     return new DeclareVariable(variableName, false, getVariableType(variableType))
                 }
             }
@@ -47,7 +47,7 @@ export default class Parser {
                 this.expect(TokenType.EQUAL, "Expected equal after constant name")
 
                 const expression = this.parseExpression()
-                this.expectNewLine()
+                if(notEndOfLine) this.expectNewLine()
 
                 return new DeclareVariable(variableName, true, VariableType.CONSTANT, expression)
             }
@@ -60,14 +60,14 @@ export default class Parser {
                 this.eat() // eat =
 
                 const expression = this.parseExpression()
-                this.expectNewLine()
+                if(notEndOfLine) this.expectNewLine()
 
                 return new AssignVariable(variableName, expression)
             }
             case TokenType.PRINT: {
                 this.eat() // eat print keyword
                 const expression = this.parseExpression()
-                this.expectNewLine()
+                if(notEndOfLine) this.expectNewLine()
                 
                 return new PrintStatement(expression)
             }
@@ -129,7 +129,7 @@ export default class Parser {
                 this.expect(TokenType.END_IF, "Expected endif after else statement block")
                 return new IfStatement(blocks)
             }
-            case TokenType.WHILE: {                
+            case TokenType.WHILE: {
                 const whileToken = this.eat()
                 const condition = this.parseExpression()
                 this.expect(TokenType.COLON, "Expected colon and while loop condition")
@@ -147,6 +147,40 @@ export default class Parser {
                 
                 this.expect(TokenType.END_WHILE, "Expected endwhile after while loop block")
                 return new WhileLoop(whileToken, condition, block)
+            }
+            case TokenType.FOR: {
+                const forToken = this.eat()
+
+                const initialization = this.parseStatement()
+                if(!initialization) {
+                    logError(forToken.line, forToken.colum, "Expected initialization statement after for keyword")
+                    Deno.exit(1)
+                }
+                this.expect(TokenType.END_LINE, "Expected new line or ; after for loop initialization")
+
+                const condition = this.parseExpression()
+                this.expect(TokenType.END_LINE, "Expected new line or ; after for loop condition")
+
+                const update = this.parseStatement()
+                if(!update) {
+                    logError(forToken.line, forToken.colum, "Expected update statement after for loop condition")
+                    Deno.exit(1)
+                }
+                this.expect(TokenType.COLON, "Expected colon after for loop condition")
+
+                const block: Statement[] = []
+                const isInLoopOldValue = this.isInLoop
+                this.isInLoop = true
+
+                while(this.at().type != TokenType.END_FOR && this.at().type != TokenType.EOF) {                    
+                    const statement = this.parseStatement()
+                    if(statement) block.push(statement)
+                }
+
+                this.isInLoop = isInLoopOldValue
+                
+                this.expect(TokenType.END_FOR, "Expected endfor after for loop block")
+                return new ForLoop(forToken, initialization, condition, update, block)
             }
             case TokenType.BREAK: {
                 if(!this.isInLoop) {

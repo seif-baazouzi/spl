@@ -1,0 +1,9 @@
+const length = 10
+
+for let i: number = 0; i<length; i = i + 1:
+    if i % 2 != 0:
+        continue
+    endif
+
+    print(i)
+endfor

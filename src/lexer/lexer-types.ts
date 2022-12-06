@@ -44,6 +44,9 @@ export enum TokenType {
     WHILE,
     END_WHILE,
 
+    FOR,
+    END_FOR,
+
     BREAK,
     CONTINUE,
 }

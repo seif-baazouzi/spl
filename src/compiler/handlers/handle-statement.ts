@@ -1,4 +1,4 @@
-import { AssignVariable, DeclareVariable, PrintStatement, Expression, NodeType, Statement, VariableType, IfStatement, WhileLoop } from "~/parser/parser-types.ts"
+import { AssignVariable, DeclareVariable, PrintStatement, Expression, NodeType, Statement, IfStatement, WhileLoop, ForLoop } from "~/parser/parser-types.ts"
 import handleDeclareVariable from "~/compiler/handlers/handle-declare-variable.ts"
 import { handleExpression } from "~/compiler/handlers/handle-expression.ts"
 import { Environment } from "~/compiler/compiler-types.ts"
@@ -6,6 +6,7 @@ import handleAssignVariable from "~/compiler/handlers/handle-assign-variable.ts"
 import handlePrint from "~/compiler/handlers/handle-print.ts"
 import handleIfStatement from "~/compiler/handlers/handle-if-statement.ts"
 import handleWhileLoop from "~/compiler/handlers/handle-while-loop.ts";
+import handleForLoop from "./handle-for-loop.ts";
 
 export function handleStatement(statement: Statement, env: Environment, conditionLoopLabel?: string, endLoopLabel?: string): string {
     switch(statement.kind) {
@@ -28,6 +29,10 @@ export function handleStatement(statement: Statement, env: Environment, conditio
         case NodeType.WHILE_LOOP: {
             const st = statement as WhileLoop
             return handleWhileLoop(st, env)
+        }
+        case NodeType.FOR_LOOP: {
+            const st = statement as ForLoop
+            return handleForLoop(st, env)
         }
         case NodeType.BREAK: {
             return `jmp ${endLoopLabel}`

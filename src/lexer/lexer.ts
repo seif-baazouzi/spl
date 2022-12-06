@@ -40,6 +40,9 @@ const lookupTokens: {[index: string]: TokenType} = {
     "while": TokenType.WHILE,
     "endwhile": TokenType.END_WHILE,
 
+    "for": TokenType.FOR,
+    "endfor": TokenType.END_FOR,
+
     "break": TokenType.BREAK,
     "continue": TokenType.CONTINUE,
 }

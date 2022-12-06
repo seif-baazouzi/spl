@@ -12,6 +12,7 @@ export enum NodeType {
     VARIABLE_TYPE,
     IF_STATEMENT,
     WHILE_LOOP,
+    FOR_LOOP,
     BREAK,
     CONTINUE,
 }
@@ -111,6 +112,18 @@ export class IfStatement extends Expression {
 export class WhileLoop extends Expression {
     constructor(public whileToken: Token, public condition: Expression, public block: Statement[]) {
         super(NodeType.WHILE_LOOP)
+    }
+}
+
+export class ForLoop extends Expression {
+    constructor(
+        public forToken: Token,
+        public initialization: Statement,
+        public condition: Expression,
+        public update: Statement,
+        public block: Statement[]
+    ) {
+        super(NodeType.FOR_LOOP)
     }
 }
 
