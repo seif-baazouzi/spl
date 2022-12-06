@@ -31,7 +31,7 @@ export default function handleForLoop(statement: ForLoop, env: Environment): str
     // condition
     assembly.push(`.for_condition_${getTokenPosition(statement.forToken)}:`)
     assembly.push(condition.assembly)
-    assembly.push(`cmp eax, 0`)
+    assembly.push(`cmp rax, 0`)
     assembly.push(`jz .endfor_${getTokenPosition(statement.forToken)}`)
 
     // block
@@ -56,9 +56,9 @@ export default function handleForLoop(statement: ForLoop, env: Environment): str
     // update
     const update = handleStatement(statement.update, blockEnv)
 
-    assembly.push(`add esp, ${blockEnv.getVariablesCount()*4}`)
+    assembly.push(`add rsp, ${blockEnv.getVariablesCount()*8}`)
     assembly.push(blockAssembly.join("\n"))
-    assembly.push(`sub esp, ${blockEnv.getVariablesCount()*4}`)
+    assembly.push(`sub rsp, ${blockEnv.getVariablesCount()*8}`)
     assembly.push(`.for_update_${getTokenPosition(statement.forToken)}:`)
     assembly.push(update)
     assembly.push(`jmp .for_condition_${getTokenPosition(statement.forToken)}`)

@@ -6,7 +6,8 @@ export default function handlePrint(st: PrintStatement, env: Environment) {
     const expression = handleExpression(st.expression, env)
     return [
         expression.assembly,
-        "push eax",
+        "push rax",
         `call ${expression.type === VariableType.NUMBER ? "_print_number" : "_print_boolean"}`,
+        `add rsp, 8`,
     ].join("\n")
 }

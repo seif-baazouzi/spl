@@ -39,7 +39,7 @@ export default function handleDeclareVariable(statement: DeclareVariable, env: E
     }
         
     result.push(assembly)
-    result.push(`mov [ebp+${index*4}], eax`)
+    result.push(`mov [rbp+${index*8}], rax`)
 
     return result.join("\n")
 }

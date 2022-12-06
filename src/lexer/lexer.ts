@@ -1,6 +1,6 @@
 import logError from "~/utils/log-error.ts"
 import { TokenType, Token } from "~/lexer/lexer-types.ts"
-import { isAlpha, isNumber, isWhitespace } from "~/lexer/lexer-helpers.ts"
+import { isAlpha, isNumber, isWhitrspace } from "~/lexer/lexer-helpers.ts"
 
 const lookupTokens: {[index: string]: TokenType} = {
     "==": TokenType.EQUALS_TO,
@@ -86,8 +86,8 @@ export default class Lexer {
                 continue
             }
 
-            // handle whitespace
-            if (isWhitespace(this.code[0])) {
+            // handle whitrspace
+            if (isWhitrspace(this.code[0])) {
                 this.code.shift()
                 this.columnCounter++
                 continue

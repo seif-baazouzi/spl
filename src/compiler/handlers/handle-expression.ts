@@ -12,8 +12,8 @@ export function handleExpression(expression: Expression, env: Environment): Expr
             return {
                 type: VariableType.NUMBER,
                 assembly: [
-                    `push eax`,
-                    `mov eax, ${st.number.value}`,
+                    `push rax`,
+                    `mov rax, ${st.number.value}`,
                 ].join("\n")
             }
         }
@@ -22,8 +22,8 @@ export function handleExpression(expression: Expression, env: Environment): Expr
             return {
                 type: VariableType.BOOLEAN,
                 assembly: [
-                    `push eax`,
-                    `mov eax, ${st.value ? 1 : 0}`,
+                    `push rax`,
+                    `mov rax, ${st.value ? 1 : 0}`,
                 ].join("\n")
             }
         }
@@ -33,8 +33,8 @@ export function handleExpression(expression: Expression, env: Environment): Expr
             return {
                 type: variable.type,
                 assembly: [
-                    `push eax`,
-                    `mov eax, [ebp+${variable.index*4}]`,
+                    `push rax`,
+                    `mov rax, [rbp+${variable.index*8}]`,
                 ].join("\n")
             }   
         }
@@ -59,100 +59,100 @@ export function handleBinaryExpression(expression: BinaryExpression, env: Enviro
     
     result.push(rightExpression.assembly)
     result.push(leftExpression.assembly)
-    result.push("pop ebx")
+    result.push("pop rbx")
     
     switch(expression.operation.type) {
         case TokenType.PLUS: {
-            result.push("add eax, ebx")
+            result.push("add rax, rbx")
             break
         }
         case TokenType.MINUS: {
-            result.push("sub eax, ebx")
+            result.push("sub rax, rbx")
             break
         }
         case TokenType.MULTIPLY: {
-            result.push("mul ebx")
+            result.push("mul rbx")
             break
         }
         case TokenType.DIVIDE: {
-            result.push("div ebx")
+            result.push("div rbx")
             break
         }
         case TokenType.MODULO: {
-            result.push("div ebx")
-            result.push("mov eax, edx")
+            result.push("div rbx")
+            result.push("mov rax, rdx")
             break
         }
         case TokenType.EQUALS_TO: {
-            result.push("cmp eax, ebx")
+            result.push("cmp rax, rbx")
             result.push(`jz .true_${getTokenPosition(expression.operation)}`)
-            result.push("mov eax, 0")
+            result.push("mov rax, 0")
             result.push(`jmp .end_${getTokenPosition(expression.operation)}`)
             result.push(`.true_${getTokenPosition(expression.operation)}:`)
-            result.push("mov eax, 1")
+            result.push("mov rax, 1")
             result.push(`.end_${getTokenPosition(expression.operation)}:`)
             break
         }
         case TokenType.DEFERENT_TO: {
-            result.push("cmp eax, ebx")
+            result.push("cmp rax, rbx")
             result.push(`jz .false_${getTokenPosition(expression.operation)}`)
-            result.push("mov eax, 1")
+            result.push("mov rax, 1")
             result.push(`jmp .end_${getTokenPosition(expression.operation)}`)
             result.push(`.false_${getTokenPosition(expression.operation)}:`)
-            result.push("mov eax, 0")
+            result.push("mov rax, 0")
             result.push(`.end_${getTokenPosition(expression.operation)}:`)
             break
         }
         case TokenType.GRATER_THEN: {
-            result.push("cmp eax, ebx")
+            result.push("cmp rax, rbx")
             result.push(`jg .true_${getTokenPosition(expression.operation)}`)
-            result.push("mov eax, 0")
+            result.push("mov rax, 0")
             result.push(`jmp .end_${getTokenPosition(expression.operation)}`)
             result.push(`.true_${getTokenPosition(expression.operation)}:`)
-            result.push("mov eax, 1")
+            result.push("mov rax, 1")
             result.push(`.end_${getTokenPosition(expression.operation)}:`)
             break
         }
         case TokenType.GRATER_OR_EQUALS: {
-            result.push("cmp eax, ebx")
+            result.push("cmp rax, rbx")
             result.push(`jge .true_${getTokenPosition(expression.operation)}`)
-            result.push("mov eax, 0")
+            result.push("mov rax, 0")
             result.push(`jmp .end_${getTokenPosition(expression.operation)}`)
             result.push(`.true_${getTokenPosition(expression.operation)}:`)
-            result.push("mov eax, 1")
+            result.push("mov rax, 1")
             result.push(`.end_${getTokenPosition(expression.operation)}:`)
             break
         }
         case TokenType.LESS_THEN: {
-            result.push("cmp eax, ebx")
+            result.push("cmp rax, rbx")
             result.push(`jl .true_${getTokenPosition(expression.operation)}`)
-            result.push("mov eax, 0")
+            result.push("mov rax, 0")
             result.push(`jmp .end_${getTokenPosition(expression.operation)}`)
             result.push(`.true_${getTokenPosition(expression.operation)}:`)
-            result.push("mov eax, 1")
+            result.push("mov rax, 1")
             result.push(`.end_${getTokenPosition(expression.operation)}:`)
             break
         }
         case TokenType.LESS_OR_EQUALS: {
-            result.push("cmp eax, ebx")
+            result.push("cmp rax, rbx")
             result.push(`jle .true_${getTokenPosition(expression.operation)}`)
-            result.push("mov eax, 0")
+            result.push("mov rax, 0")
             result.push(`jmp .end_${getTokenPosition(expression.operation)}`)
             result.push(`.true_${getTokenPosition(expression.operation)}:`)
-            result.push("mov eax, 1")
+            result.push("mov rax, 1")
             result.push(`.end_${getTokenPosition(expression.operation)}:`)
             break
         }
         case TokenType.AND: {
-            result.push("and eax, ebx")
+            result.push("and rax, rbx")
             break
         }
         case TokenType.OR: {
-            result.push("or eax, ebx")
+            result.push("or rax, rbx")
             break
         }
         case TokenType.XOR: {
-            result.push("xor eax, ebx")
+            result.push("xor rax, rbx")
             break
         }
     }

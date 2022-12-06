@@ -41,6 +41,6 @@ export default function handleAssignVariable(statement: AssignVariable, env: Env
 
     return [
         expression.assembly,
-        `mov [ebp+${variable.index*4}], eax`
+        `mov [rbp+${variable.index*8}], rax`
     ].join("\n")
 }

@@ -1,92 +1,99 @@
 export default `
+BITS 64
+
 global _start
 
-section .text:
+section .text
 
 _print_number:
-    push eax
-    push ebx
-    push ecx
-    push edx
-    push esi
-    push edi
+    push rax
+    push rdi
+    push rsi
+    push rdx
+    push rbp
 
-    mov eax, [esp+28]
-    mov esi, esp
-    mov edi, 2
+    mov rax, [rsp+48]
+    mov rbp, rsp
+    mov rcx, 2
 
     push byte 0x0
     push byte 0xa
 
     _push:
-        mov edx, 0
-        mov ebx, 10
-        div ebx
+        mov rdx, 0
+        mov rbx, 10
+        div rbx
         
-        add edx, 0x30
-        push edx
-        add edi, 4
+        add rdx, 0x30
+        push rdx
+        add rcx, 8
 
-        cmp eax, 0
+        cmp rax, 0
         jne _push
 
-    mov eax, 0x4
-    mov ebx, 0x1
-    mov ecx, esp
-    mov edx, edi
-    int 0x80
+    mov rax, 1
+    mov rdi, 1
+    mov rsi, rsp
+    mov rdx, rcx
+    syscall
 
-    mov esp, esi
+    mov rsp, rbp
 
-    pop edi
-    pop esi
-    pop edx
-    pop ecx
-    pop ebx
-    pop eax
+    pop rbp
+    pop rdx
+    pop rsi
+    pop rdi
+    pop rax
 
     ret
 
 _print_boolean:
-    push eax
+    push rax
+    push rdi
+    push rsi
+    push rdx
 
-    mov eax, [esp+8]
+    mov rax, [rsp+40]
 
-    cmp eax, 0
+    cmp rax, 0
     jne .print_true
     jmp .print_false
 
     .print_true:
-        mov eax, 0x4
-        mov ebx, 0x1
-        mov ecx, true
-        mov edx, trueLength
-        int 0x80
+        mov rax, 1
+        mov rdi, 1
+        mov rsi, true
+        mov rdx, trueLength
+        syscall
         jmp .end
     
     .print_false:
-        mov eax, 0x4
-        mov ebx, 0x1
-        mov ecx, false
-        mov edx, falseLength
-        int 0x80
+        mov rax, 1
+        mov rdi, 1
+        mov rsi, false
+        mov rdx, falseLength
+        syscall
 
     .end:
-    pop eax
+
+    pop rdx
+    pop rsi
+    pop rdi
+    pop rax
 
     ret
 
 _start:
-    mov ebp, esp
-    xor eax, eax
+    mov rbp, rsp
+    xor rax, rax
 
     %CODE%
 
-    mov eax, 0x1
-    mov ebx, 0x0
-    int 0x80
+    mov rax, 60
+    mov rdi, 0
+    syscall
 
-section .data:
+section .data
     true: db "true", 0xa
     trueLength equ $-true
     false: db "false", 0xa

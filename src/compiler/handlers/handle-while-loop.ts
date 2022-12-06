@@ -22,7 +22,7 @@ export default function handleWhileLoop(statement: WhileLoop, env: Environment):
     
     // condition
     assembly.push(condition.assembly)
-    assembly.push(`cmp eax, 0`)
+    assembly.push(`cmp rax, 0`)
     assembly.push(`jz .endwhile_${getTokenPosition(statement.whileToken)}`)
 
     // block
@@ -45,9 +45,9 @@ export default function handleWhileLoop(statement: WhileLoop, env: Environment):
         }
     }
     
-    assembly.push(`add esp, ${blockEnv.getVariablesCount()*4}`)
+    assembly.push(`add rsp, ${blockEnv.getVariablesCount()*8}`)
     assembly.push(blockAssembly.join("\n"))
-    assembly.push(`sub esp, ${blockEnv.getVariablesCount()*4}`)
+    assembly.push(`sub rsp, ${blockEnv.getVariablesCount()*8}`)
     assembly.push(`jmp .while_condition_${getTokenPosition(statement.whileToken)}`)
     assembly.push(`.endwhile_${getTokenPosition(statement.whileToken)}:`)
     

@@ -13,15 +13,15 @@ export default async function compile(program: Program) {
     const encoder = new TextEncoder()
     Deno.writeFile("dist/res.asm", encoder.encode(assemblyCode))
 
-    await run("nasm", "-f", "elf32", "-o", "dist/res.o", "dist/res.asm")
-    await run("ld", "-m", "elf_i386", "-o", "dist/res", "dist/res.o")
+    await run("nasm", "-f", "elf64", "-o", "dist/res.o", "dist/res.asm")
+    await run("ld", "-o", "dist/res", "dist/res.o")
 }
 
 function generateAssemblyCode(program: Program): string {
     const env = new Environment()
     
     const result = program.body.map((s) => handleStatement(s, env))
-    result.unshift(`add esp, ${env.getVariablesCount()*4}`)
+    result.unshift(`add rsp, ${env.getVariablesCount()*8}`)
 
     return result.join("\n")
 }

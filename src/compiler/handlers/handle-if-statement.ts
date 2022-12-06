@@ -26,7 +26,7 @@ export default function handleIfStatement(statement: IfStatement, env: Environme
     
             // condition
             assembly.push(condition.assembly)
-            assembly.push(`cmp eax, 0`)
+            assembly.push(`cmp rax, 0`)
             
             if(index === statement.blocks.length-1) {
                 assembly.push(`jz .endif_${getTokenPosition(ifToken)}`)
@@ -42,10 +42,10 @@ export default function handleIfStatement(statement: IfStatement, env: Environme
             blockAssembly.push(handleStatement(st, blockEnv, conditionLoopLabel, endLoopLabel))
         }
         
-        assembly.push(`add esp, ${blockEnv.getVariablesCount()*4}`)
+        assembly.push(`add rsp, ${blockEnv.getVariablesCount()*8}`)
         assembly.push(blockAssembly.join("\n"))
         assembly.push(`jmp .endif_${getTokenPosition(ifToken)}`)
-        assembly.push(`sub esp, ${blockEnv.getVariablesCount()*4}`)
+        assembly.push(`sub rsp, ${blockEnv.getVariablesCount()*8}`)
     })
 
     assembly.push(`.endif_${getTokenPosition(ifToken)}:`)
