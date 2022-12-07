@@ -4,9 +4,9 @@ import logError from "~/utils/log-error.ts"
 
 export class Variable {
     constructor(
-        public index: number,
+        public address: number,
         public type: VariableType,
-    ) {}
+    ) { }
 }
 
 export interface ExpressionValue {
@@ -15,18 +15,18 @@ export interface ExpressionValue {
 }
 
 export class Environment {
-    private index = 0
+    private address = 0
     private variables: Map<string, Variable> = new Map()
     private constants: Set<string> = new Set()
 
     constructor(private parent?: Environment) {
-        if(parent) {
-            this.index = parent.index
+        if (parent) {
+            this.address = parent.address
         }
     }
-    
+
     declareVariable(st: DeclareVariable): number {
-        if(this.hasVariable(st.name.value)) {
+        if (this.hasVariable(st.name.value)) {
             logError(
                 st.name.line,
                 st.name.colum,
@@ -35,18 +35,22 @@ export class Environment {
             Deno.exit(1)
         }
 
-        if(st.isConstant) this.constants.add(st.name.value)
+        if (st.isConstant) this.constants.add(st.name.value)
 
-        this.variables.set(st.name.value, new Variable(this.index, st.type))
-        return this.index++
+        this.variables.set(st.name.value, new Variable(this.address, st.type))
+
+        const currentAddress = this.address
+        this.address += 8 // size of the register 8 bytes
+
+        return currentAddress
     }
 
     getVariable(variableName: Token): Variable {
-        if(this.variables.has(variableName.value)) {
+        if (this.variables.has(variableName.value)) {
             return this.variables.get(variableName.value) as Variable
         }
 
-        if(this.parent?.hasVariable(variableName.value)) {
+        if (this.parent?.hasVariable(variableName.value)) {
             return this.parent.getVariable(variableName) as Variable
         }
 
@@ -55,11 +59,11 @@ export class Environment {
     }
 
     hasVariable(varName: string): boolean {
-        if(this.variables.has(varName)) {
+        if (this.variables.has(varName)) {
             return true
         }
 
-        if(this.parent?.hasVariable(varName)) {
+        if (this.parent?.hasVariable(varName)) {
             return true
         }
 
@@ -70,7 +74,11 @@ export class Environment {
         return this.constants.has(constantName)
     }
 
-    getVariablesCount(): number {
-        return this.variables.size
+    getVariablesSize(): number {
+        if (this.parent) {
+            return this.address - this.parent.address
+        }
+
+        return this.address
     }
 }

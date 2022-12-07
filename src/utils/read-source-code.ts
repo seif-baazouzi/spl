@@ -1,5 +1,5 @@
-export default function readSourceCode(): string {    
-    if(Deno.args.length === 0) {
+export default function readSourceCode(): string {
+    if (Deno.args.length === 0) {
         console.log("Usage: splc [file.spl]")
         Deno.exit(1)
     }

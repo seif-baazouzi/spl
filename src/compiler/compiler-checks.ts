@@ -4,13 +4,13 @@ import logError from "~/utils/log-error.ts"
 import typeToString from "~/utils/type-to-string.ts"
 
 export function checkBinaryExpression(operation: Token, leftType: VariableType, rightType: VariableType): VariableType {
-    switch(operation.type) {
+    switch (operation.type) {
         case TokenType.PLUS:
         case TokenType.MINUS:
         case TokenType.MULTIPLY:
         case TokenType.DIVIDE:
         case TokenType.MODULO: {
-            if(leftType != VariableType.NUMBER || rightType != VariableType.NUMBER) {
+            if (leftType != VariableType.NUMBER || rightType != VariableType.NUMBER) {
                 logError(
                     operation.line,
                     operation.colum,
@@ -23,7 +23,7 @@ export function checkBinaryExpression(operation: Token, leftType: VariableType, 
         }
         case TokenType.EQUALS_TO:
         case TokenType.DEFERENT_TO: {
-            if(leftType != rightType) {
+            if (leftType != rightType) {
                 logError(
                     operation.line,
                     operation.colum,
@@ -38,7 +38,7 @@ export function checkBinaryExpression(operation: Token, leftType: VariableType, 
         case TokenType.GRATER_OR_EQUALS:
         case TokenType.LESS_THEN:
         case TokenType.LESS_OR_EQUALS: {
-            if(leftType != VariableType.NUMBER || rightType != VariableType.NUMBER) {
+            if (leftType != VariableType.NUMBER || rightType != VariableType.NUMBER) {
                 logError(
                     operation.line,
                     operation.colum,
@@ -52,7 +52,7 @@ export function checkBinaryExpression(operation: Token, leftType: VariableType, 
         case TokenType.AND:
         case TokenType.OR:
         case TokenType.XOR: {
-            if(leftType != VariableType.BOOLEAN || rightType != VariableType.BOOLEAN) {
+            if (leftType != VariableType.BOOLEAN || rightType != VariableType.BOOLEAN) {
                 logError(
                     operation.line,
                     operation.colum,

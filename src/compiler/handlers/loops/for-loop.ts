@@ -1,9 +1,9 @@
-import { ForLoop, NodeType, VariableType } from "~/parser/parser-types.ts";
-import { Environment } from "~/compiler/compiler-types.ts";
-import { getTokenPosition } from "~/compiler/compiler-helpers.ts";
-import { handleExpression } from "~/compiler/handlers/handle-expression.ts";
-import logError from "~/utils/log-error.ts";
-import { handleStatement } from "~/compiler/handlers/handle-statement.ts";
+import { ForLoop, VariableType } from "~/parser/parser-types.ts"
+import { Environment } from "~/compiler/compiler-types.ts"
+import { getTokenPosition } from "~/compiler/compiler-helpers.ts"
+import { handleExpression } from "~/compiler/handlers/expressions/expression.ts"
+import logError from "~/utils/log-error.ts"
+import { handleStatement } from "~/compiler/handlers/statements/handle-statement.ts"
 
 export default function handleForLoop(statement: ForLoop, env: Environment): string {
     const assembly: string[] = []
@@ -19,7 +19,7 @@ export default function handleForLoop(statement: ForLoop, env: Environment): str
 
     // condition type must be of boolean type
     const condition = handleExpression(statement.condition, blockEnv)
-    if(condition.type != VariableType.BOOLEAN) {
+    if (condition.type != VariableType.BOOLEAN) {
         logError(
             statement.forToken.line,
             statement.forToken.colum,
@@ -27,7 +27,7 @@ export default function handleForLoop(statement: ForLoop, env: Environment): str
         )
         Deno.exit(1)
     }
-    
+
     // condition
     assembly.push(`.for_condition_${getTokenPosition(statement.forToken)}:`)
     assembly.push(condition.assembly)
@@ -36,33 +36,29 @@ export default function handleForLoop(statement: ForLoop, env: Environment): str
 
     // block
     const blockAssembly: string[] = []
-    for(const st of statement.block) {
-        switch(st.kind) {
-            case NodeType.BREAK:
-                blockAssembly.push(`jmp .endfor_${getTokenPosition(statement.forToken)}`)
-                break;
-            default:
-                blockAssembly.push(
-                    handleStatement(
-                        st,
-                        blockEnv, 
-                        `.for_update_${getTokenPosition(statement.forToken)}`,
-                        `.endfor_${getTokenPosition(statement.forToken)}`
-                    )
-                )
-        }
+    for (const st of statement.block) {
+        blockAssembly.push(
+            handleStatement(
+                st,
+                blockEnv,
+                `.for_update_${getTokenPosition(statement.forToken)}`,
+                `.endfor_${getTokenPosition(statement.forToken)}`
+            )
+        )
     }
-    
+
     // update
     const update = handleStatement(statement.update, blockEnv)
 
-    assembly.push(`add rsp, ${blockEnv.getVariablesCount()*8}`)
+    assembly.push(`add rsp, ${blockEnv.getVariablesSize()}`) // allocate variables memory
     assembly.push(blockAssembly.join("\n"))
-    assembly.push(`sub rsp, ${blockEnv.getVariablesCount()*8}`)
+    assembly.push(`sub rsp, ${blockEnv.getVariablesSize()}`) // free variables memory
+
     assembly.push(`.for_update_${getTokenPosition(statement.forToken)}:`)
     assembly.push(update)
+
     assembly.push(`jmp .for_condition_${getTokenPosition(statement.forToken)}`)
     assembly.push(`.endfor_${getTokenPosition(statement.forToken)}:`)
-    
+
     return assembly.join("\n")
 }

@@ -1,53 +1,9 @@
 import { TokenType } from "~/lexer/lexer-types.ts"
-import { BinaryExpression, Boolean, Expression, Identifier, NodeType, Numerical } from "~/parser/parser-types.ts"
-import { VariableType } from "~/parser/parser-types.ts"
-import { checkBinaryExpression } from "~/compiler/compiler-checks.ts"
-import { ExpressionValue, Environment } from "~/compiler/compiler-types.ts"
+import { BinaryExpression } from "~/parser/parser-types.ts"
 import { getTokenPosition } from "~/compiler/compiler-helpers.ts"
-
-export function handleExpression(expression: Expression, env: Environment): ExpressionValue {
-    switch(expression.kind) {
-        case NodeType.NUMBER: {
-            const st = expression as Numerical
-            return {
-                type: VariableType.NUMBER,
-                assembly: [
-                    `push rax`,
-                    `mov rax, ${st.number.value}`,
-                ].join("\n")
-            }
-        }
-        case NodeType.BOOLEAN: {
-            const st = expression as Boolean
-            return {
-                type: VariableType.BOOLEAN,
-                assembly: [
-                    `push rax`,
-                    `mov rax, ${st.value ? 1 : 0}`,
-                ].join("\n")
-            }
-        }
-        case NodeType.IDENTIFIER: {
-            const st = expression as Identifier
-            const variable = env.getVariable(st.symbol)
-            return {
-                type: variable.type,
-                assembly: [
-                    `push rax`,
-                    `mov rax, [rbp+${variable.index*8}]`,
-                ].join("\n")
-            }   
-        }
-        case NodeType.BINARY_EXPRESSION: {
-            const st = expression as BinaryExpression
-            return handleBinaryExpression(st, env)
-        }
-        default: {
-            console.log(`DEBUG: Unexpected NodeType `, expression)
-            Deno.exit(1)
-        }
-    }
-}
+import { Environment, ExpressionValue } from "~/compiler/compiler-types.ts"
+import { handleExpression } from "~/compiler/handlers/expressions/expression.ts"
+import { checkBinaryExpression } from "~/compiler/compiler-checks.ts"
 
 export function handleBinaryExpression(expression: BinaryExpression, env: Environment): ExpressionValue {
     const result = []
@@ -56,12 +12,12 @@ export function handleBinaryExpression(expression: BinaryExpression, env: Enviro
     const leftExpression = handleExpression(expression.left, env)
 
     const returnType = checkBinaryExpression(expression.operation, leftExpression.type, rightExpression.type)
-    
+
     result.push(rightExpression.assembly)
     result.push(leftExpression.assembly)
     result.push("pop rbx")
-    
-    switch(expression.operation.type) {
+
+    switch (expression.operation.type) {
         case TokenType.PLUS: {
             result.push("add rax, rbx")
             break
@@ -160,5 +116,5 @@ export function handleBinaryExpression(expression: BinaryExpression, env: Enviro
     return {
         type: returnType,
         assembly: result.join("\n")
-    } 
+    }
 }

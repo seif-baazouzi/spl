@@ -3,7 +3,7 @@ import { Token } from "~/lexer/lexer-types.ts"
 import logError from "~/utils/log-error.ts"
 
 export function getVariableType(type: Token): VariableType {
-    switch(type.value) {
+    switch (type.value) {
         case "number":
             return VariableType.NUMBER
         case "bool":

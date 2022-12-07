@@ -1,8 +1,8 @@
 import logError from "~/utils/log-error.ts"
 import { TokenType, Token } from "~/lexer/lexer-types.ts"
-import { isAlpha, isNumber, isWhitrspace } from "~/lexer/lexer-helpers.ts"
+import { isAlpha, isNumber, isWhitespace } from "~/lexer/lexer-helpers.ts"
 
-const lookupTokens: {[index: string]: TokenType} = {
+const lookupTokens: { [index: string]: TokenType } = {
     "==": TokenType.EQUALS_TO,
     "!=": TokenType.DEFERENT_TO,
     ">=": TokenType.GRATER_OR_EQUALS,
@@ -62,18 +62,18 @@ export default class Lexer {
         this.tokens = []
 
         loop:
-        while (this.code.length != 0) {     
+        while (this.code.length != 0) {
             // handler predefined tokens         
-            for(const token in lookupTokens) {
-                if(this.copyToken(token.length) === token) {
-                    const tokenType = lookupTokens[token]                    
+            for (const token in lookupTokens) {
+                if (this.copyToken(token.length) === token) {
+                    const tokenType = lookupTokens[token]
                     this.tokens.push(new Token(tokenType, token, this.lineCounter, this.columnCounter))
                     this.shiftToken(token)
 
                     continue loop
                 }
             }
-            
+
             // handle number
             if (isNumber(this.code[0])) {
                 this.handlerNumber()
@@ -86,15 +86,15 @@ export default class Lexer {
                 continue
             }
 
-            // handle whitrspace
-            if (isWhitrspace(this.code[0])) {
+            // handle whitespace
+            if (isWhitespace(this.code[0])) {
                 this.code.shift()
                 this.columnCounter++
                 continue
             }
 
             // invalid token
-            logError(this.lineCounter, this.columnCounter,  `Invalid token ${this.code[0]}`)
+            logError(this.lineCounter, this.columnCounter, `Invalid token ${this.code[0]}`)
             Deno.exit(1)
         }
 
@@ -102,7 +102,7 @@ export default class Lexer {
         return this.tokens
     }
 
-    handlerNumber() {
+    private handlerNumber() {
         let number = ""
         while (isNumber(this.code[0])) {
             number += this.code.shift()
@@ -112,7 +112,7 @@ export default class Lexer {
         this.columnCounter += number.length
     }
 
-    handlerIdentifier() {
+    private handlerIdentifier() {
         let identifier = ""
         while (isAlpha(this.code[0]) || isNumber(this.code[0]) || this.code[0] === "_") {
             identifier += this.code.shift()
@@ -122,19 +122,19 @@ export default class Lexer {
         this.columnCounter += identifier.length
     }
 
-    copyToken(length: number): string {
+    private copyToken(length: number): string {
         const result: string[] = []
-        for(let i=0; i<length; i++) {
-            if(this.code[i]) result.push(this.code[i])
+        for (let i = 0; i < length; i++) {
+            if (this.code[i]) result.push(this.code[i])
         }
-        
+
         return result.join("")
     }
 
-    shiftToken(token: string) {
-        for(let i=0; i<token.length; i++) this.code.shift()
+    private shiftToken(token: string) {
+        for (let i = 0; i < token.length; i++) this.code.shift()
 
-        if(token === "\n") {
+        if (token === "\n") {
             this.lineCounter++
             this.columnCounter = 1
         } else {

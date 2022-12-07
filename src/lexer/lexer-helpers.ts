@@ -6,6 +6,6 @@ export function isAlpha(str: string): boolean {
     return str?.toLocaleLowerCase() >= "a" && str?.toLocaleLowerCase() <= "z"
 }
 
-export function isWhitrspace(str: string): boolean {
+export function isWhitespace(str: string): boolean {
     return str == " " || str == "\t"
 }

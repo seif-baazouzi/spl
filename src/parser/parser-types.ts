@@ -26,12 +26,12 @@ export enum VariableType {
 export class Statement {
     constructor(
         public kind: NodeType
-    ) {}
+    ) { }
 }
 
 export class Program extends Statement {
     public body: Statement[]
-    
+
     constructor() {
         super(NodeType.PROGRAM)
         this.body = []
@@ -46,13 +46,13 @@ export class Expression extends Statement {
     }
 }
 
-export class PrintStatement extends Statement {    
+export class PrintStatement extends Statement {
     constructor(public expression: Expression) {
         super(NodeType.PRINT)
     }
 }
 
-export class DeclareVariable extends Statement {    
+export class DeclareVariable extends Statement {
     constructor(
         public name: Token,
         public isConstant: boolean,
@@ -63,7 +63,7 @@ export class DeclareVariable extends Statement {
     }
 }
 
-export class AssignVariable extends Statement {    
+export class AssignVariable extends Statement {
     constructor(public name: Token, public expression: Expression) {
         super(NodeType.ASSIGN_VARIABLE)
     }
