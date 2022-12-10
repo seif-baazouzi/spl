@@ -10,7 +10,7 @@ export function checkBinaryExpression(operation: Token, leftType: VariableType, 
         case TokenType.MULTIPLY:
         case TokenType.DIVIDE:
         case TokenType.MODULO: {
-            if (leftType != VariableType.NUMBER || rightType != VariableType.NUMBER) {
+            if (!isNumberType(leftType) || !isNumberType(rightType)) {
                 logError(
                     operation.line,
                     operation.colum,
@@ -19,7 +19,7 @@ export function checkBinaryExpression(operation: Token, leftType: VariableType, 
                 Deno.exit(1)
             }
 
-            return VariableType.NUMBER
+            return VariableType.UINT
         }
         case TokenType.EQUALS_TO:
         case TokenType.DEFERENT_TO: {
@@ -38,7 +38,7 @@ export function checkBinaryExpression(operation: Token, leftType: VariableType, 
         case TokenType.GRATER_OR_EQUALS:
         case TokenType.LESS_THEN:
         case TokenType.LESS_OR_EQUALS: {
-            if (leftType != VariableType.NUMBER || rightType != VariableType.NUMBER) {
+            if (!isNumberType(leftType) || !isNumberType(rightType)) {
                 logError(
                     operation.line,
                     operation.colum,
@@ -68,4 +68,8 @@ export function checkBinaryExpression(operation: Token, leftType: VariableType, 
             Deno.exit(1)
         }
     }
+}
+
+export function isNumberType(type: VariableType): boolean {
+    return type === VariableType.UINT || type === VariableType.INT
 }

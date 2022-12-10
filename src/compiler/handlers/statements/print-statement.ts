@@ -13,5 +13,13 @@ export default function handlePrint(st: PrintStatement, env: Environment) {
 }
 
 function getPrintFunction(type: VariableType): string {
-    return type === VariableType.BOOLEAN ? "_print_boolean" : "_print_number"
+    switch (type) {
+        case VariableType.BOOLEAN:
+            return "_print_boolean"
+        case VariableType.INT:
+            return "_print_int"
+        default:
+            return "_print_uint"
+
+    }
 }

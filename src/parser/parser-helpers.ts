@@ -4,8 +4,10 @@ import logError from "~/utils/log-error.ts"
 
 export function getVariableType(type: Token): VariableType {
     switch (type.value) {
-        case "number":
-            return VariableType.NUMBER
+        case "int":
+            return VariableType.INT
+        case "uint":
+            return VariableType.UINT
         case "bool":
             return VariableType.BOOLEAN
         default: {

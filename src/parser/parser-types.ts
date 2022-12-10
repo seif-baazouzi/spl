@@ -18,7 +18,8 @@ export enum NodeType {
 }
 
 export enum VariableType {
-    NUMBER,
+    INT,
+    UINT,
     BOOLEAN,
     CONSTANT,
 }

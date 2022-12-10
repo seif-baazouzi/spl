@@ -8,7 +8,7 @@ export function handleExpression(expression: Expression, env: Environment): Expr
         case NodeType.NUMBER: {
             const st = expression as Numerical
             return {
-                type: VariableType.NUMBER,
+                type: VariableType.UINT,
                 assembly: [
                     `push rax`,
                     `mov rax, ${st.number.value}`,

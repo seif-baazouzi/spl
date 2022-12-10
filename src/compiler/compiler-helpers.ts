@@ -1,4 +1,5 @@
 import { Token } from "~/lexer/lexer-types.ts"
+import { VariableType } from "~/parser/parser-types.ts"
 
 export async function run(...cmd: string[]) {
     console.log(`[CMD] ${cmd.join(" ")}`)
@@ -21,4 +22,17 @@ export async function run(...cmd: string[]) {
 
 export function getTokenPosition(token: Token): string {
     return `${token.line}_${token.colum}`
+}
+
+export function changeNumberType(statementType: VariableType, expressionType: VariableType): string {
+    if (statementType === expressionType)
+        return ""
+
+    if (statementType === VariableType.INT)
+        return "add rax, 2147483647"
+
+    if (statementType === VariableType.UINT)
+        return "sub rax, 2147483647"
+
+    return ""
 }
