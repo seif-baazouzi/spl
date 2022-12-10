@@ -40,7 +40,14 @@ export class Environment {
         this.variables.set(st.name.value, new Variable(this.address, st.type))
 
         const currentAddress = this.address
-        this.address += 8 // size of the register 8 bytes
+
+        switch (st.type) {
+            case VariableType.BOOLEAN:
+                this.address += 1
+                break
+            default:
+                this.address += 8
+        }
 
         return currentAddress
     }
@@ -75,10 +82,9 @@ export class Environment {
     }
 
     getVariablesSize(): number {
-        if (this.parent) {
-            return this.address - this.parent.address
-        }
+        let memory = this.parent ? this.address - this.parent.address : this.address
+        while (memory % 8 != 0) memory++
 
-        return this.address
+        return memory
     }
 }

@@ -28,11 +28,22 @@ export function handleExpression(expression: Expression, env: Environment): Expr
         case NodeType.IDENTIFIER: {
             const st = expression as Identifier
             const variable = env.getVariable(st.symbol)
+
+            let movInstruction = ""
+
+            switch (variable.type) {
+                case VariableType.BOOLEAN:
+                    movInstruction = `movzx rax, byte [rbp+${variable.address}]`
+                    break
+                default:
+                    movInstruction = `mov rax, [rbp+${variable.address}]`
+            }
+
             return {
                 type: variable.type,
                 assembly: [
                     `push rax`,
-                    `mov rax, [rbp+${variable.address}]`,
+                    movInstruction,
                 ].join("\n")
             }
         }

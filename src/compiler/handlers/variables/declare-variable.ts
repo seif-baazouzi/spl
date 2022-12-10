@@ -1,4 +1,4 @@
-import { DeclareVariable, Expression } from "~/parser/parser-types.ts"
+import { DeclareVariable, Expression, VariableType } from "~/parser/parser-types.ts"
 import { handleExpression } from "~/compiler/handlers/expressions/expression.ts"
 import { Environment } from "~/compiler/compiler-types.ts"
 import logError from "~/utils/log-error.ts"
@@ -39,7 +39,14 @@ export default function handleDeclareVariable(statement: DeclareVariable, env: E
     }
 
     result.push(assembly)
-    result.push(`mov [rbp+${address}], rax`)
+
+    switch (statement.type) {
+        case VariableType.BOOLEAN:
+            result.push(`mov [rbp+${address}], al`)
+            break
+        default:
+            result.push(`mov [rbp+${address}], rax`)
+    }
 
     return result.join("\n")
 }
