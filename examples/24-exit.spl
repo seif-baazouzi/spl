@@ -1,0 +1,8 @@
+const x = 10
+const y = 2
+
+if y == 0:
+    exit 1
+endif
+
+print x / y

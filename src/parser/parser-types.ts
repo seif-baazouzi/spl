@@ -3,6 +3,7 @@ import { Token } from "~/lexer/lexer-types.ts"
 export enum NodeType {
     PROGRAM,
     PRINT,
+    EXIT,
     NUMBER,
     BOOLEAN,
     IDENTIFIER,
@@ -50,6 +51,12 @@ export class Expression extends Statement {
 export class PrintStatement extends Statement {
     constructor(public expression: Expression) {
         super(NodeType.PRINT)
+    }
+}
+
+export class ExitStatement extends Statement {
+    constructor(public token: Token, public expression: Expression) {
+        super(NodeType.EXIT)
     }
 }
 

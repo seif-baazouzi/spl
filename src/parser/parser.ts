@@ -6,6 +6,7 @@ import {
     BreakKeyword,
     ContinueKeyword,
     DeclareVariable,
+    ExitStatement,
     Expression,
     ForLoop,
     Identifier,
@@ -49,6 +50,8 @@ export default class Parser {
                 return this.parseIdentifier(notEndOfLine)
             case TokenType.PRINT:
                 return this.parsePrint(notEndOfLine)
+            case TokenType.EXIT:
+                return this.parseExit(notEndOfLine)
             case TokenType.IF:
                 return this.parseIf()
             case TokenType.WHILE:
@@ -154,6 +157,17 @@ export default class Parser {
         if (notEndOfLine) this.expectNewLine()
 
         return new PrintStatement(expression)
+    }
+
+    private parseExit(notEndOfLine: boolean): PrintStatement {
+        const token = this.expect(
+            TokenType.EXIT,
+            `Expected token exit but got ${this.at().value}!`,
+        )
+        const expression = this.parseExpression()
+        if (notEndOfLine) this.expectNewLine()
+
+        return new ExitStatement(token, expression)
     }
 
     private parseIf(): IfStatement {

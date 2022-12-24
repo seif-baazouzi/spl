@@ -1,4 +1,4 @@
-import { AssignVariable, DeclareVariable, PrintStatement, Expression, NodeType, Statement, IfStatement, WhileLoop, ForLoop } from "~/parser/parser-types.ts"
+import { AssignVariable, DeclareVariable, PrintStatement, Expression, NodeType, Statement, IfStatement, WhileLoop, ForLoop, ExitStatement } from "~/parser/parser-types.ts"
 import handleDeclareVariable from "~/compiler/handlers/variables/declare-variable.ts"
 import { handleExpression } from "~/compiler/handlers/expressions/expression.ts"
 import { Environment } from "~/compiler/compiler-types.ts"
@@ -7,6 +7,7 @@ import handlePrint from "~/compiler/handlers/statements/print-statement.ts"
 import handleIfStatement from "~/compiler/handlers/statements/if-statement.ts"
 import handleWhileLoop from "~/compiler/handlers/loops/while-loop.ts"
 import handleForLoop from "~/compiler/handlers/loops/for-loop.ts"
+import handleExit from "~/compiler/handlers/statements/exit-statement.ts"
 
 export function handleStatement(statement: Statement, env: Environment, conditionLoopLabel?: string, endLoopLabel?: string): string {
     switch (statement.kind) {
@@ -21,6 +22,10 @@ export function handleStatement(statement: Statement, env: Environment, conditio
         case NodeType.PRINT: {
             const st = statement as PrintStatement
             return handlePrint(st, env)
+        }
+        case NodeType.EXIT: {
+            const st = statement as ExitStatement
+            return handleExit(st, env)
         }
         case NodeType.IF_STATEMENT: {
             const st = statement as IfStatement

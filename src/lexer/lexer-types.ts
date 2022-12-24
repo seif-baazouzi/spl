@@ -49,6 +49,8 @@ export enum TokenType {
 
     BREAK,
     CONTINUE,
+
+    EXIT,
 }
 
 export class Token {

@@ -45,6 +45,8 @@ const lookupTokens: { [index: string]: TokenType } = {
 
     "break": TokenType.BREAK,
     "continue": TokenType.CONTINUE,
+
+    "exit": TokenType.EXIT,
 }
 
 export default class Lexer {
