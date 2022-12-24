@@ -28,6 +28,7 @@ export enum TokenType {
     EOF,
 
     COLON,
+    COMMA,
 
     TRUE,
     FALSE,
@@ -51,6 +52,7 @@ export enum TokenType {
     CONTINUE,
 
     EXIT,
+    SYSCALL,
 }
 
 export class Token {

@@ -17,6 +17,7 @@ import {
     PrintStatement,
     Program,
     Statement,
+    SyscallExpression,
     VariableType,
     WhileLoop,
 } from "~/parser/parser-types.ts"
@@ -159,7 +160,7 @@ export default class Parser {
         return new PrintStatement(expression)
     }
 
-    private parseExit(notEndOfLine: boolean): PrintStatement {
+    private parseExit(notEndOfLine: boolean): ExitStatement {
         const token = this.expect(
             TokenType.EXIT,
             `Expected token exit but got ${this.at().value}!`,
@@ -349,7 +350,33 @@ export default class Parser {
     }
 
     private parseExpression(): Expression {
-        return this.parseLogicalStatement()
+        switch (this.at().type) {
+            case TokenType.SYSCALL:
+                return this.parseSyscall()
+            default:
+                return this.parseLogicalStatement()
+        }
+    }
+
+    private parseSyscall(): SyscallExpression {
+        const token = this.expect(
+            TokenType.SYSCALL,
+            `Expected token syscall but got ${this.at().value}!`,
+        )
+
+        this.expect(TokenType.OPEN_PAREN, `Expected token ( but got ${this.at().value}!`)
+
+        const rax = this.parseExpression()
+        this.expect(TokenType.COMMA, `Expected token , but got ${this.at().value}!`)
+        const rdi = this.parseExpression()
+        this.expect(TokenType.COMMA, `Expected token , but got ${this.at().value}!`)
+        const rsi = this.parseExpression()
+        this.expect(TokenType.COMMA, `Expected token , but got ${this.at().value}!`)
+        const rdx = this.parseExpression()
+
+        this.expect(TokenType.CLOSE_PAREN, `Expected token ) but got ${this.at().value}!`)
+
+        return new SyscallExpression(token, rax, rdi, rsi, rdx)
     }
 
     private parseLogicalStatement(): Expression {

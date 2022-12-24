@@ -19,6 +19,7 @@ const lookupTokens: { [index: string]: TokenType } = {
     "/": TokenType.DIVIDE,
     "%": TokenType.MODULO,
     ":": TokenType.COLON,
+    ",": TokenType.COMMA,
     ";": TokenType.END_LINE,
     "\n": TokenType.END_LINE,
 
@@ -47,6 +48,7 @@ const lookupTokens: { [index: string]: TokenType } = {
     "continue": TokenType.CONTINUE,
 
     "exit": TokenType.EXIT,
+    "syscall": TokenType.SYSCALL,
 }
 
 export default class Lexer {

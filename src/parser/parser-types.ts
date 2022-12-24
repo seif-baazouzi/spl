@@ -4,6 +4,7 @@ export enum NodeType {
     PROGRAM,
     PRINT,
     EXIT,
+    SYSCALL,
     NUMBER,
     BOOLEAN,
     IDENTIFIER,
@@ -57,6 +58,18 @@ export class PrintStatement extends Statement {
 export class ExitStatement extends Statement {
     constructor(public token: Token, public expression: Expression) {
         super(NodeType.EXIT)
+    }
+}
+
+export class SyscallExpression extends Expression {
+    constructor(
+        public token: Token,
+        public rax: Expression,
+        public rdi: Expression,
+        public rsi: Expression,
+        public rdx: Expression,
+    ) {
+        super(NodeType.SYSCALL)
     }
 }
 

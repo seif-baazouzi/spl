@@ -1,0 +1,4 @@
+const EXIT_SYSCALL = 60
+const EXIT_STATUS  = 0
+
+syscall(EXIT_SYSCALL, EXIT_STATUS, 0, 0)

@@ -1,7 +1,8 @@
-import { BinaryExpression, Boolean, Expression, Identifier, NodeType, Numerical } from "~/parser/parser-types.ts"
+import { BinaryExpression, Boolean, Expression, Identifier, NodeType, Numerical, SyscallExpression } from "~/parser/parser-types.ts"
 import { VariableType } from "~/parser/parser-types.ts"
 import { ExpressionValue, Environment } from "~/compiler/compiler-types.ts"
 import { handleBinaryExpression } from "~/compiler/handlers/expressions/binary-expression.ts"
+import { handleSyscallExpression } from "./syscall-expression.ts"
 
 export function handleExpression(expression: Expression, env: Environment): ExpressionValue {
     switch (expression.kind) {
@@ -50,6 +51,10 @@ export function handleExpression(expression: Expression, env: Environment): Expr
         case NodeType.BINARY_EXPRESSION: {
             const st = expression as BinaryExpression
             return handleBinaryExpression(st, env)
+        }
+        case NodeType.SYSCALL: {
+            const st = expression as SyscallExpression
+            return handleSyscallExpression(st, env)
         }
         default: {
             console.log(`DEBUG: Unexpected NodeType `, expression)
