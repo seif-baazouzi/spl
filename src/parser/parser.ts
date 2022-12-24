@@ -132,7 +132,14 @@ export default class Parser {
     }
 
     private parseIdentifier(notEndOfLine: boolean): Statement {
-        if (this.next().type != TokenType.EQUAL) {
+        if (
+            this.next().type != TokenType.EQUAL &&
+            this.next().type != TokenType.PLUS_EQUAL &&
+            this.next().type != TokenType.MINUS_EQUAL &&
+            this.next().type != TokenType.MULTIPLY_EQUAL &&
+            this.next().type != TokenType.DIVIDE_EQUAL &&
+            this.next().type != TokenType.MODULO_EQUAL
+        ) {
             return this.parseExpression()
         }
 
@@ -141,12 +148,12 @@ export default class Parser {
             `Expected identifier but got ${this.at().value}!`,
         )
 
-        this.eat() // eat =
+        const operation = this.eat()
 
         const expression = this.parseExpression()
         if (notEndOfLine) this.expectNewLine()
 
-        return new AssignVariable(variableName, expression)
+        return new AssignVariable(variableName, operation, expression)
     }
 
     private parsePrint(notEndOfLine: boolean): PrintStatement {

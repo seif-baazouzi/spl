@@ -1,0 +1,19 @@
+let x: uint = 10
+
+x = 12
+print x
+
+x += 1
+print x
+
+x -= 1
+print x
+
+x *= 2
+print x
+
+x /= 3
+print x
+
+x %= 3
+print x

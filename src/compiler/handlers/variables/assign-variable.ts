@@ -5,6 +5,7 @@ import logError from "~/utils/log-error.ts"
 import typeToString from "~/utils/type-to-string.ts"
 import { isNumberType } from "~/compiler/compiler-checks.ts"
 import { changeNumberType } from "~/compiler/compiler-helpers.ts"
+import { Token, TokenType } from "~/lexer/lexer-types.ts"
 
 export default function handleAssignVariable(statement: AssignVariable, env: Environment) {
     // variable is not declared
@@ -47,6 +48,45 @@ export default function handleAssignVariable(statement: AssignVariable, env: Env
 
     return [
         expression.assembly,
-        `mov [rbp+${variable.address}], rax`
+        getOperationAssembly(statement.operation, variable.address),
     ].join("\n")
+}
+
+function getOperationAssembly(operation: Token, variableAddress: number): string {
+    switch (operation.type) {
+        case TokenType.EQUAL:
+            return `mov [rbp+${variableAddress}], rax`
+        case TokenType.PLUS_EQUAL:
+            return `add [rbp+${variableAddress}], rax`
+        case TokenType.MINUS_EQUAL:
+            return `sub [rbp+${variableAddress}], rax`
+        case TokenType.MULTIPLY_EQUAL:
+            return [
+                `mov rbx, [rbp+${variableAddress}]`,
+                `mul rbx`,
+                `mov [rbp+${variableAddress}], rax`,
+            ].join("\n")
+        case TokenType.DIVIDE_EQUAL:
+            return [
+                `mov rbx, rax`,
+                `mov rax, [rbp+${variableAddress}]`,
+                `div rbx`,
+                `mov [rbp+${variableAddress}], rax`,
+            ].join("\n")
+        case TokenType.MODULO_EQUAL:
+            return [
+                `mov rbx, rax`,
+                `mov rax, [rbp+${variableAddress}]`,
+                `div rbx`,
+                `mov [rbp+${variableAddress}], rdx`,
+            ].join("\n")
+        default: {
+            logError(
+                operation.line,
+                operation.colum,
+                `DEBUG: unexpected token ${operation.value}`
+            )
+            Deno.exit(1)
+        }
+    }
 }

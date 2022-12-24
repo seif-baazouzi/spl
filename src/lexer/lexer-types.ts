@@ -9,6 +9,11 @@ export enum TokenType {
     MODULO,
 
     EQUAL,
+    PLUS_EQUAL,
+    MINUS_EQUAL,
+    MULTIPLY_EQUAL,
+    DIVIDE_EQUAL,
+    MODULO_EQUAL,
 
     EQUALS_TO,
     DEFERENT_TO,

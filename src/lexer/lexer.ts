@@ -10,9 +10,15 @@ const lookupTokens: { [index: string]: TokenType } = {
     "<=": TokenType.LESS_OR_EQUALS,
     "<": TokenType.LESS_THEN,
 
+    "=": TokenType.EQUAL,
+    "+=": TokenType.PLUS_EQUAL,
+    "-=": TokenType.MINUS_EQUAL,
+    "*=": TokenType.MULTIPLY_EQUAL,
+    "/=": TokenType.DIVIDE_EQUAL,
+    "%=": TokenType.MODULO_EQUAL,
+
     "(": TokenType.OPEN_PAREN,
     ")": TokenType.CLOSE_PAREN,
-    "=": TokenType.EQUAL,
     "+": TokenType.PLUS,
     "-": TokenType.MINUS,
     "*": TokenType.MULTIPLY,

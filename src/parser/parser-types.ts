@@ -85,7 +85,7 @@ export class DeclareVariable extends Statement {
 }
 
 export class AssignVariable extends Statement {
-    constructor(public name: Token, public expression: Expression) {
+    constructor(public name: Token, public operation: Token, public expression: Expression) {
         super(NodeType.ASSIGN_VARIABLE)
     }
 }
