@@ -5,6 +5,7 @@ import {
     Boolean,
     BreakKeyword,
     ContinueKeyword,
+    DeclareFunction,
     DeclareVariable,
     ExitStatement,
     Expression,
@@ -16,6 +17,7 @@ import {
     Numerical,
     PrintStatement,
     Program,
+    ReturnStatement,
     Statement,
     SyscallExpression,
     VariableType,
@@ -23,9 +25,11 @@ import {
 } from "~/parser/parser-types.ts"
 import logError from "~/utils/log-error.ts"
 import { getVariableType } from "~/parser/parser-helpers.ts"
+import typeToString from "../utils/type-to-string.ts"
 
 export default class Parser {
     private isInLoop = false;
+    private functionReturnType?: VariableType
 
     constructor(private tokens: Token[]) { }
 
@@ -63,6 +67,10 @@ export default class Parser {
                 return this.parseBreak()
             case TokenType.CONTINUE:
                 return this.parseContinue()
+            case TokenType.FUNC:
+                return this.parseFunction()
+            case TokenType.RETURN:
+                return this.parseReturn()
             case TokenType.END_LINE: {
                 this.eat()
                 return
@@ -176,6 +184,133 @@ export default class Parser {
         if (notEndOfLine) this.expectNewLine()
 
         return new ExitStatement(token, expression)
+    }
+
+    private parseFunction(): DeclareFunction {
+        if (this.functionReturnType !== undefined) {
+            logError(
+                this.at().line,
+                this.at().colum,
+                `Can not declare function inside a function`,
+            )
+            Deno.exit(1)
+        }
+
+        // parse function name
+        this.expect(
+            TokenType.FUNC,
+            `Expected token func but got ${this.at().value}!`,
+        )
+        const name = this.expect(
+            TokenType.IDENTIFIER,
+            "Expected function name after func keyword",
+        )
+
+        // parse function arguments
+        this.expect(TokenType.OPEN_PAREN, "Expected ( after function name!")
+
+        const argumentsList: DeclareVariable[] = []
+        if (this.at().type === TokenType.IDENTIFIER) {
+            do {
+                if (this.at().type === TokenType.COMMA) this.eat()
+
+                const argumentName = this.eat()
+                this.expect(TokenType.COLON, "Expected colon after argument name!")
+                const argumentType = getVariableType(
+                    this.expect(
+                        TokenType.IDENTIFIER,
+                        "Expected argument type after argument name!",
+                    )
+                )
+
+                argumentsList.push(new DeclareVariable(argumentName, false, argumentType))
+            } while (this.at().type === TokenType.COMMA)
+        }
+
+        this.expect(TokenType.CLOSE_PAREN, "Expected ) after function arguments!")
+
+        // parse function return type
+        this.expect(TokenType.COLON, "Expected colon after function arguments!")
+        const returnType = getVariableType(
+            this.expect(
+                TokenType.IDENTIFIER,
+                "Expected function return type after function arguments!",
+            )
+        )
+
+        this.expect(TokenType.END_LINE, "Expected new line or ; after function return type")
+
+        // parse function block
+        const block: Statement[] = []
+        let hasReturn = false
+
+        const isInLoopOldValue = this.isInLoop
+        const functionReturnTypeOldValue = this.functionReturnType
+
+        this.isInLoop = false
+        this.functionReturnType = returnType
+
+        while (
+            this.at().type != TokenType.END_FUNC &&
+            this.at().type != TokenType.EOF
+        ) {
+            if (this.at().type === TokenType.RETURN) hasReturn = true
+
+            const statement = this.parseStatement()
+            if (statement) block.push(statement)
+        }
+
+        this.isInLoop = isInLoopOldValue
+        this.functionReturnType = functionReturnTypeOldValue
+
+        // parse end of function
+        this.expect(
+            TokenType.END_FUNC,
+            "Expected endfunc after function block",
+        )
+
+        if (returnType != VariableType.VOID && !hasReturn) {
+            logError(
+                name.line,
+                name.colum,
+                `Function ${name.value} does not contain return statement`,
+            )
+        }
+
+        return new DeclareFunction(name, argumentsList, returnType, block)
+    }
+
+    private parseReturn(): ReturnStatement {
+        if (this.functionReturnType === undefined) {
+            logError(
+                this.at().line,
+                this.at().colum,
+                `Unexpected token return outside of function`,
+            )
+            Deno.exit(1)
+        }
+
+        const token = this.expect(
+            TokenType.RETURN,
+            `Expected token return but got ${this.at().value}!`,
+        )
+
+        // void return type
+        if (this.at().type === TokenType.END_LINE) {
+            if (this.functionReturnType !== VariableType.VOID) {
+                logError(
+                    this.at().line,
+                    this.at().colum,
+                    `This function has ${typeToString(this.functionReturnType)} return type!`,
+                )
+                Deno.exit(1)
+            }
+            return new ReturnStatement(token, this.functionReturnType)
+        }
+
+        // other return type
+        const expression = this.parseExpression()
+        return new ReturnStatement(token, this.functionReturnType, expression)
     }
 
     private parseIf(): IfStatement {

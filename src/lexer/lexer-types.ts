@@ -53,8 +53,12 @@ export enum TokenType {
     FOR,
     END_FOR,
 
+    FUNC,
+    END_FUNC,
+
     BREAK,
     CONTINUE,
+    RETURN,
 
     EXIT,
     SYSCALL,

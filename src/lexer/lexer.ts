@@ -50,8 +50,12 @@ const lookupTokens: { [index: string]: TokenType } = {
     "for": TokenType.FOR,
     "endfor": TokenType.END_FOR,
 
+    "func": TokenType.FUNC,
+    "endfunc": TokenType.END_FUNC,
+
     "break": TokenType.BREAK,
     "continue": TokenType.CONTINUE,
+    "return": TokenType.RETURN,
 
     "exit": TokenType.EXIT,
     "syscall": TokenType.SYSCALL,

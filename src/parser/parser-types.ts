@@ -10,6 +10,7 @@ export enum NodeType {
     IDENTIFIER,
     BINARY_EXPRESSION,
     DECLARE_VARIABLE,
+    DECLARE_FUNCTION,
     ASSIGN_VARIABLE,
     VARIABLE_TYPE,
     IF_STATEMENT,
@@ -17,11 +18,13 @@ export enum NodeType {
     FOR_LOOP,
     BREAK,
     CONTINUE,
+    RETURN,
 }
 
 export enum VariableType {
     INT,
     UINT,
+    VOID,
     BOOLEAN,
     CONSTANT,
 }
@@ -87,6 +90,23 @@ export class DeclareVariable extends Statement {
 export class AssignVariable extends Statement {
     constructor(public name: Token, public operation: Token, public expression: Expression) {
         super(NodeType.ASSIGN_VARIABLE)
+    }
+}
+
+export class DeclareFunction extends Statement {
+    constructor(
+        public name: Token,
+        public argumentsList: DeclareVariable[],
+        public returnType: VariableType,
+        public block: Statement[],
+    ) {
+        super(NodeType.DECLARE_FUNCTION)
+    }
+}
+
+export class ReturnStatement extends Statement {
+    constructor(public token: Token, public returnType: VariableType, public expression?: Expression) {
+        super(NodeType.RETURN)
     }
 }
 

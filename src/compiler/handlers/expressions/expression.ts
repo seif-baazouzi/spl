@@ -57,8 +57,8 @@ export function handleExpression(expression: Expression, env: Environment): Expr
             return handleSyscallExpression(st, env)
         }
         default: {
-            console.log(`DEBUG: Unexpected NodeType `, expression)
-            Deno.exit(1)
+            console.log(expression)
+            throw new Error(`DEBUG: Unexpected NodeType`)
         }
     }
 }

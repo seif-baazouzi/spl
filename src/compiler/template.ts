@@ -5,6 +5,20 @@ global _start
 
 section .text
 
+_start:
+    mov rbp, rsp
+    xor rax, rax
+
+    %CODE%
+
+    mov rax, 60
+    mov rdi, 0
+    syscall
+
+    ret
+
+%FUNCTIONS%
+
 _print_int:
     push rax
     push rdi
@@ -151,16 +165,6 @@ _print_boolean:
     pop rax
 
     ret
-
-_start:
-    mov rbp, rsp
-    xor rax, rax
-
-    %CODE%
-
-    mov rax, 60
-    mov rdi, 0
-    syscall
 
 section .data
     true: db "true", 0xa

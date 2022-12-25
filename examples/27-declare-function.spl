@@ -1,0 +1,5 @@
+func sum(a: uint, b: uint): uint
+    return a + b + x
+endfunc
+
+let x: uint = 10

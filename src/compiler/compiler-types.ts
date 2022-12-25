@@ -1,11 +1,18 @@
 import { Token } from "~/lexer/lexer-types.ts"
-import { DeclareVariable, VariableType } from "~/parser/parser-types.ts"
+import { DeclareFunction, DeclareVariable, VariableType } from "~/parser/parser-types.ts"
 import logError from "~/utils/log-error.ts"
 
 export class Variable {
     constructor(
         public address: number,
         public type: VariableType,
+    ) { }
+}
+
+export class Function {
+    constructor(
+        public argumentsList: VariableType[],
+        public returnType: VariableType,
     ) { }
 }
 
@@ -17,6 +24,7 @@ export interface ExpressionValue {
 export class Environment {
     private address = 0
     private variables: Map<string, Variable> = new Map()
+    private functions: Map<string, Function> = new Map()
     private constants: Set<string> = new Set()
 
     constructor(private parent?: Environment) {
@@ -26,7 +34,7 @@ export class Environment {
     }
 
     declareVariable(st: DeclareVariable): number {
-        if (this.hasVariable(st.name.value)) {
+        if (this.hasVariable(st.name.value) || this.hasFunction(st.name.value)) {
             logError(
                 st.name.line,
                 st.name.colum,
@@ -77,6 +85,18 @@ export class Environment {
         return false
     }
 
+    hasFunction(funcName: string): boolean {
+        if (this.functions.has(funcName)) {
+            return true
+        }
+
+        if (this.parent?.hasFunction(funcName)) {
+            return true
+        }
+
+        return false
+    }
+
     isConstant(constantName: string): boolean {
         return this.constants.has(constantName)
     }
@@ -86,5 +106,28 @@ export class Environment {
         while (memory % 8 != 0) memory++
 
         return memory
+    }
+
+    declareFunction(func: DeclareFunction) {
+        if (this.hasVariable(func.name.value) || this.hasFunction(func.name.value)) {
+            logError(
+                func.name.line,
+                func.name.colum,
+                `Identifier ${func.name.value} is already declared!`
+            )
+            Deno.exit(1)
+        }
+
+        this.functions.set(
+            func.name.value,
+            new Function(
+                func.argumentsList.map(arg => arg.type),
+                func.returnType,
+            )
+        )
+    }
+
+    clearVariables() {
+        this.variables.clear()
     }
 }
