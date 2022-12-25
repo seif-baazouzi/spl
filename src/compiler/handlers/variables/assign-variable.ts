@@ -1,5 +1,5 @@
 import { handleExpression } from "~/compiler/handlers/expressions/expression.ts"
-import { AssignVariable } from "~/parser/parser-types.ts"
+import { AssignVariable, VariableType } from "~/parser/parser-types.ts"
 import { Environment } from "~/compiler/compiler-types.ts"
 import logError from "~/utils/log-error.ts"
 import typeToString from "~/utils/type-to-string.ts"
@@ -46,10 +46,29 @@ export default function handleAssignVariable(statement: AssignVariable, env: Env
         }
     }
 
-    return [
-        expression.assembly,
-        getOperationAssembly(statement.operation, variable.address),
-    ].join("\n")
+    // allow +=, -=, ... only on numerical types
+    if (!isNumberType(variable.type) && statement.operation.type != TokenType.EQUAL) {
+        logError(
+            statement.name.line,
+            statement.name.colum,
+            `Can not assign ${typeToString(variable.type)} using ${statement.operation.value} operation`
+        )
+        Deno.exit(1)
+    }
+
+    switch (variable.type) {
+        case VariableType.CHAR:
+        case VariableType.BOOLEAN:
+            return [
+                expression.assembly,
+                `mov [rbp-${variable.address}], al`
+            ].join("\n")
+        default:
+            return [
+                expression.assembly,
+                getOperationAssembly(statement.operation, variable.address),
+            ].join("\n")
+    }
 }
 
 function getOperationAssembly(operation: Token, variableAddress: number): string {

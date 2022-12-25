@@ -6,6 +6,8 @@ export default function typeToString(type: VariableType): string {
             return "int"
         case VariableType.UINT:
             return "uint"
+        case VariableType.CHAR:
+            return "char"
         case VariableType.VOID:
             return "void"
         case VariableType.BOOLEAN:
