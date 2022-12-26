@@ -55,30 +55,30 @@ export default function handleAssignVariable(statement: AssignVariable, env: Env
 function getOperationAssembly(operation: Token, variableAddress: number): string {
     switch (operation.type) {
         case TokenType.EQUAL:
-            return `mov [rbp+${variableAddress}], rax`
+            return `mov [rbp-${variableAddress}], rax`
         case TokenType.PLUS_EQUAL:
-            return `add [rbp+${variableAddress}], rax`
+            return `add [rbp-${variableAddress}], rax`
         case TokenType.MINUS_EQUAL:
-            return `sub [rbp+${variableAddress}], rax`
+            return `sub [rbp-${variableAddress}], rax`
         case TokenType.MULTIPLY_EQUAL:
             return [
-                `mov rbx, [rbp+${variableAddress}]`,
+                `mov rbx, [rbp-${variableAddress}]`,
                 `mul rbx`,
-                `mov [rbp+${variableAddress}], rax`,
+                `mov [rbp-${variableAddress}], rax`,
             ].join("\n")
         case TokenType.DIVIDE_EQUAL:
             return [
                 `mov rbx, rax`,
-                `mov rax, [rbp+${variableAddress}]`,
+                `mov rax, [rbp-${variableAddress}]`,
                 `div rbx`,
-                `mov [rbp+${variableAddress}], rax`,
+                `mov [rbp-${variableAddress}], rax`,
             ].join("\n")
         case TokenType.MODULO_EQUAL:
             return [
                 `mov rbx, rax`,
-                `mov rax, [rbp+${variableAddress}]`,
+                `mov rax, [rbp-${variableAddress}]`,
                 `div rbx`,
-                `mov [rbp+${variableAddress}], rdx`,
+                `mov [rbp-${variableAddress}], rdx`,
             ].join("\n")
         default: {
             logError(

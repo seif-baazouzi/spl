@@ -1,11 +1,10 @@
-import { DeclareFunction, DeclareVariable, NodeType, Program } from "~/parser/parser-types.ts"
+import { DeclareFunction, NodeType, Program } from "~/parser/parser-types.ts"
 
 import template from "~/compiler/template.ts"
 import { run } from "~/compiler/compiler-helpers.ts"
 import { handleStatement } from "~/compiler/handlers/statements/handle-statement.ts"
 import { Environment } from "~/compiler/compiler-types.ts"
-import handleDeclareFunction from "./handlers/statements/declare-function.ts"
-import handleDeclareVariable from "./handlers/variables/declare-variable.ts"
+import handleDeclareFunction from "~/compiler/handlers/statements/declare-function.ts"
 
 export default async function compile(program: Program) {
     await run("rm", "-rf", "dist")
@@ -23,13 +22,7 @@ function generateAssembly(program: Program): string {
     const functions: string[] = []
 
     const env = new Environment()
-
-    // declare global variables
-    program.body.forEach(st => {
-        if (st.kind === NodeType.DECLARE_VARIABLE) {
-            handleDeclareVariable(st as DeclareVariable, env)
-        }
-    })
+    env.addToAddress(8) // base address in bsp register
 
     // declare functions
     program.body.forEach(st => {
@@ -40,13 +33,14 @@ function generateAssembly(program: Program): string {
     })
 
     // rest of the code
-    env.clearVariables()
     program.body.forEach(st => {
         if (st.kind !== NodeType.DECLARE_FUNCTION) {
             const result = handleStatement(st, env)
             code.push(result)
         }
+
     })
+    code.unshift(`sub rsp, ${env.getVariablesSize()}`)
 
     return template
         .replace("%CODE%", code.join("\n"))

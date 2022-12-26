@@ -8,6 +8,7 @@ export enum NodeType {
     NUMBER,
     BOOLEAN,
     IDENTIFIER,
+    FUNCTION_CALL,
     BINARY_EXPRESSION,
     DECLARE_VARIABLE,
     DECLARE_FUNCTION,
@@ -110,7 +111,13 @@ export class ReturnStatement extends Statement {
     }
 }
 
-export class BinaryExpression extends Statement {
+export class FunctionCall extends Expression {
+    constructor(public functionName: Token, public parameters: Expression[]) {
+        super(NodeType.FUNCTION_CALL)
+    }
+}
+
+export class BinaryExpression extends Expression {
     constructor(
         public operation: Token,
         public left: Expression,

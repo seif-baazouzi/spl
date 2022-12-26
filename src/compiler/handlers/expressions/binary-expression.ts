@@ -14,6 +14,7 @@ export function handleBinaryExpression(expression: BinaryExpression, env: Enviro
     const returnType = checkBinaryExpression(expression.operation, leftExpression.type, rightExpression.type)
 
     result.push(rightExpression.assembly)
+    result.push(`push rax`)
     result.push(leftExpression.assembly)
     result.push("pop rbx")
 

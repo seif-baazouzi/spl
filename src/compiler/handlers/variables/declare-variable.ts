@@ -48,10 +48,10 @@ export default function handleDeclareVariable(statement: DeclareVariable, env: E
 
     switch (statement.type) {
         case VariableType.BOOLEAN:
-            result.push(`mov [rbp+${address}], al`)
+            result.push(`mov [rbp-${address}], al`)
             break
         default:
-            result.push(`mov [rbp+${address}], rax`)
+            result.push(`mov [rbp-${address}], rax`)
     }
 
     return result.join("\n")

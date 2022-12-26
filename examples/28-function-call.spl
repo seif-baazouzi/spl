@@ -1,0 +1,6 @@
+const x = sum(10, 10)
+print x
+
+func sum(a: uint, b: uint): uint
+    return a + b
+endfunc

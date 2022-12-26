@@ -10,6 +10,7 @@ import {
     ExitStatement,
     Expression,
     ForLoop,
+    FunctionCall,
     Identifier,
     IfStatement,
     IfStatementBlock,
@@ -605,6 +606,36 @@ export default class Parser {
                 return new Boolean(false)
             }
             case TokenType.IDENTIFIER: {
+                // handle function call
+                if (this.next().type === TokenType.OPEN_PAREN) {
+                    const functionName = this.eat()
+                    const parameters: Expression[] = []
+                    this.eat() // eat (
+                    if (this.at().type === TokenType.CLOSE_PAREN) {
+                        this.eat() // eat )
+                    } else {
+                        if (this.at().type === TokenType.COMMA) {
+                            logError(
+                                this.at().line,
+                                this.at().colum,
+                                `Expected expression but got , in function ${functionName.value} parameters`
+                            )
+                        }
+
+                        do {
+                            if (this.at().type === TokenType.COMMA) this.eat()
+
+                            const expression = this.parseExpression()
+                            parameters.push(expression)
+                        } while (this.at().type === TokenType.COMMA)
+
+                        this.expect(TokenType.CLOSE_PAREN, `Expected ) after ${functionName.value} function call parameter!`)
+                    }
+
+                    return new FunctionCall(functionName, parameters)
+                }
+
+                // handle identifier
                 return new Identifier(NodeType.IDENTIFIER, this.eat())
             }
             case TokenType.OPEN_PAREN: {

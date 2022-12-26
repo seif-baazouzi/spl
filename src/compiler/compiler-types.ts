@@ -1,6 +1,7 @@
 import { Token } from "~/lexer/lexer-types.ts"
 import { DeclareFunction, DeclareVariable, VariableType } from "~/parser/parser-types.ts"
 import logError from "~/utils/log-error.ts"
+import { getTokenPosition } from "./compiler-helpers.ts"
 
 export class Variable {
     constructor(
@@ -11,6 +12,7 @@ export class Variable {
 
 export class Function {
     constructor(
+        public name: string,
         public argumentsList: VariableType[],
         public returnType: VariableType,
     ) { }
@@ -121,13 +123,36 @@ export class Environment {
         this.functions.set(
             func.name.value,
             new Function(
+                `_${func.name.value}_${getTokenPosition(func.name)}`,
                 func.argumentsList.map(arg => arg.type),
                 func.returnType,
             )
         )
     }
 
+    getFunction(funcName: Token): Function {
+        if (this.functions.has(funcName.value)) {
+            return this.functions.get(funcName.value) as Function
+        }
+
+        if (this.parent?.functions.has(funcName.value)) {
+            return this.parent.functions.get(funcName.value) as Function
+        }
+
+        logError(
+            funcName.line,
+            funcName.colum,
+            `Error: Function ${funcName.value} is not declared!`
+        )
+        Deno.exit(1)
+    }
+
+    addToAddress(num: number) {
+        this.address += num
+    }
+
     clearVariables() {
+        this.address = 0
         this.variables.clear()
     }
 }
