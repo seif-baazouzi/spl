@@ -15,6 +15,7 @@ import {
     IfStatement,
     IfStatementBlock,
     NodeType,
+    NotExpression,
     Numerical,
     PrintStatement,
     Program,
@@ -494,11 +495,20 @@ export default class Parser {
 
     private parseExpression(): Expression {
         switch (this.at().type) {
+            case TokenType.NOT:
+                return this.parseNot()
             case TokenType.SYSCALL:
                 return this.parseSyscall()
             default:
                 return this.parseLogicalStatement()
         }
+    }
+
+    private parseNot(): Expression {
+        const token = this.expect(TokenType.NOT, `Expected token not but got ${this.at().value}`)
+        const expression = this.parseExpression()
+
+        return new NotExpression(token, expression)
     }
 
     private parseSyscall(): SyscallExpression {

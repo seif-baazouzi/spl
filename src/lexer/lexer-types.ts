@@ -25,6 +25,7 @@ export enum TokenType {
     AND,
     OR,
     XOR,
+    NOT,
 
     OPEN_PAREN,
     CLOSE_PAREN,

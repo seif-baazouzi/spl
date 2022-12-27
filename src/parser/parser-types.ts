@@ -10,6 +10,7 @@ export enum NodeType {
     IDENTIFIER,
     FUNCTION_CALL,
     BINARY_EXPRESSION,
+    NOT_EXPRESSION,
     DECLARE_VARIABLE,
     DECLARE_FUNCTION,
     ASSIGN_VARIABLE,
@@ -124,6 +125,12 @@ export class BinaryExpression extends Expression {
         public right: Expression,
     ) {
         super(NodeType.BINARY_EXPRESSION)
+    }
+}
+
+export class NotExpression extends Expression {
+    constructor(public token: Token, public expression: Expression) {
+        super(NodeType.NOT_EXPRESSION)
     }
 }
 

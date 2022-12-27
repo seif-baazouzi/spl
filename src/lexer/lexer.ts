@@ -32,6 +32,7 @@ const lookupTokens: { [index: string]: TokenType } = {
     "and": TokenType.AND,
     "or": TokenType.OR,
     "xor": TokenType.XOR,
+    "not": TokenType.NOT,
 
     "let": TokenType.LET,
     "const": TokenType.CONST,

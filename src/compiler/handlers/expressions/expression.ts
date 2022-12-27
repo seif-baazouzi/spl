@@ -1,9 +1,10 @@
-import { BinaryExpression, Boolean, Expression, FunctionCall, Identifier, NodeType, Numerical, SyscallExpression } from "~/parser/parser-types.ts"
+import { BinaryExpression, Boolean, Expression, FunctionCall, Identifier, NodeType, NotExpression, Numerical, SyscallExpression } from "~/parser/parser-types.ts"
 import { VariableType } from "~/parser/parser-types.ts"
 import { ExpressionValue, Environment } from "~/compiler/compiler-types.ts"
 import { handleBinaryExpression } from "~/compiler/handlers/expressions/binary-expression.ts"
 import { handleSyscallExpression } from "~/compiler/handlers/expressions/syscall-expression.ts"
 import handleFunctionCall from "~/compiler/handlers/expressions/function-call.ts"
+import handleNotExpression from "~/compiler/handlers/expressions/not-expression.ts"
 
 export function handleExpression(expression: Expression, env: Environment): ExpressionValue {
     switch (expression.kind) {
@@ -43,6 +44,10 @@ export function handleExpression(expression: Expression, env: Environment): Expr
         case NodeType.BINARY_EXPRESSION: {
             const st = expression as BinaryExpression
             return handleBinaryExpression(st, env)
+        }
+        case NodeType.NOT_EXPRESSION: {
+            const st = expression as NotExpression
+            return handleNotExpression(st, env)
         }
         case NodeType.FUNCTION_CALL: {
             const st = expression as FunctionCall

@@ -1,0 +1,7 @@
+const x = 12
+
+if not x == 10:
+    print 1
+else:
+    print 0
+endif
