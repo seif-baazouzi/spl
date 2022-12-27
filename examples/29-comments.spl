@@ -1,0 +1,2 @@
+const x = 20 # This is a comment
+print x

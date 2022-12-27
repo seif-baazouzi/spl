@@ -77,7 +77,14 @@ export default class Lexer {
 
         loop:
         while (this.code.length != 0) {
-            // handler predefined tokens         
+            // handle comments
+            if (this.code[0] === "#") {
+                do {
+                    this.code.shift()
+                } while (this.code.length != 0 && this.code.at(0) !== "\n")
+            }
+
+            // handler predefined tokens    
             for (const token in lookupTokens) {
                 if (this.copyToken(token.length) === token) {
                     const tokenType = lookupTokens[token]
