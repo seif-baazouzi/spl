@@ -1,4 +1,4 @@
-import { AsExpression, NodeType, VariableType } from "~/parser/parser-types.ts"
+import { AsExpression, VariableType } from "~/parser/parser-types.ts"
 import { Environment, ExpressionValue } from "~/compiler/compiler-types.ts"
 import { handleExpression } from "~/compiler/handlers/expressions/expression.ts"
 import logError from "~/utils/log-error.ts"

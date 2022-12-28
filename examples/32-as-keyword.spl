@@ -1,2 +1,9 @@
 const x = 'a' as int
 print x
+
+let a: int = 10
+let b: uint = 10
+
+if a == (b as int):
+    print 'a'
+endif

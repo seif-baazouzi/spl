@@ -47,6 +47,15 @@ export function checkBinaryExpression(operation: Token, leftType: VariableType, 
                 Deno.exit(1)
             }
 
+            if (leftType != rightType) {
+                logError(
+                    operation.line,
+                    operation.colum,
+                    `Cannot compare ${typeToString(leftType)} and ${typeToString(rightType)}`
+                )
+                Deno.exit(1)
+            }
+
             return VariableType.BOOLEAN
         }
         case TokenType.AND:
