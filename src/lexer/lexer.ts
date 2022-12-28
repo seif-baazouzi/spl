@@ -60,6 +60,8 @@ const lookupTokens: { [index: string]: TokenType } = {
 
     "exit": TokenType.EXIT,
     "syscall": TokenType.SYSCALL,
+
+    "as": TokenType.AS,
 }
 
 export default class Lexer {

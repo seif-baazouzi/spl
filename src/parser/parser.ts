@@ -1,5 +1,6 @@
 import { Token, TokenType } from "~/lexer/lexer-types.ts"
 import {
+    AsExpression,
     AssignVariable,
     BinaryExpression,
     Boolean,
@@ -495,14 +496,30 @@ export default class Parser {
     }
 
     private parseExpression(): Expression {
+        let expression
+
         switch (this.at().type) {
             case TokenType.NOT:
-                return this.parseNot()
+                expression = this.parseNot()
+                break
             case TokenType.SYSCALL:
-                return this.parseSyscall()
+                expression = this.parseSyscall()
+                break
             default:
-                return this.parseLogicalStatement()
+                expression = this.parseLogicalStatement()
         }
+
+        if (this.at().type === TokenType.AS) {
+            const token = this.eat()
+            const type = this.expect(
+                TokenType.IDENTIFIER,
+                "Expected type after as keyword",
+            )
+
+            return new AsExpression(token, expression, getVariableType(type))
+        }
+
+        return expression
     }
 
     private parseNot(): Expression {

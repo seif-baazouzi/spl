@@ -22,6 +22,7 @@ export enum NodeType {
     BREAK,
     CONTINUE,
     RETURN,
+    AS_EXPRESSION,
 }
 
 export enum VariableType {
@@ -133,6 +134,12 @@ export class BinaryExpression extends Expression {
 export class NotExpression extends Expression {
     constructor(public token: Token, public expression: Expression) {
         super(NodeType.NOT_EXPRESSION)
+    }
+}
+
+export class AsExpression extends Expression {
+    constructor(public token: Token, public expression: Expression, public type: VariableType) {
+        super(NodeType.AS_EXPRESSION)
     }
 }
 

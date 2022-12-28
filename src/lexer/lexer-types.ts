@@ -64,6 +64,8 @@ export enum TokenType {
 
     EXIT,
     SYSCALL,
+
+    AS,
 }
 
 export class Token {
