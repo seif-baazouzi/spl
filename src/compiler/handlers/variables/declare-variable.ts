@@ -47,6 +47,7 @@ export default function handleDeclareVariable(statement: DeclareVariable, env: E
     result.push(assembly)
 
     switch (statement.type) {
+        case VariableType.CHAR:
         case VariableType.BOOLEAN:
             result.push(`mov [rbp-${address}], al`)
             break

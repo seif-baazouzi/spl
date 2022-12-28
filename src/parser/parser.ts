@@ -4,6 +4,7 @@ import {
     BinaryExpression,
     Boolean,
     BreakKeyword,
+    Char,
     ContinueKeyword,
     DeclareFunction,
     DeclareVariable,
@@ -606,6 +607,9 @@ export default class Parser {
         switch (token.type) {
             case TokenType.NUMBER: {
                 return new Numerical(NodeType.NUMBER, this.eat())
+            }
+            case TokenType.CHAR: {
+                return new Char(this.eat())
             }
             case TokenType.TRUE: {
                 this.eat() // eat true

@@ -6,6 +6,7 @@ export enum NodeType {
     EXIT,
     SYSCALL,
     NUMBER,
+    CHAR,
     BOOLEAN,
     IDENTIFIER,
     FUNCTION_CALL,
@@ -26,6 +27,7 @@ export enum NodeType {
 export enum VariableType {
     INT,
     UINT,
+    CHAR,
     VOID,
     BOOLEAN,
     CONSTANT,
@@ -143,6 +145,12 @@ export class Identifier extends Expression {
 export class Numerical extends Expression {
     constructor(public kind: NodeType, public number: Token) {
         super(kind)
+    }
+}
+
+export class Char extends Expression {
+    constructor(public char: Token) {
+        super(NodeType.CHAR)
     }
 }
 

@@ -83,6 +83,8 @@ export default class Lexer {
                 do {
                     this.code.shift()
                 } while (this.code.length != 0 && this.code.at(0) !== "\n")
+
+                continue
             }
 
             // handler predefined tokens    
@@ -99,6 +101,12 @@ export default class Lexer {
             // handle number
             if (isNumber(this.code[0])) {
                 this.handlerNumber()
+                continue
+            }
+
+            // handle char
+            if (this.code[0] === "'") {
+                this.handleChar()
                 continue
             }
 
@@ -132,6 +140,35 @@ export default class Lexer {
 
         this.tokens.push(new Token(TokenType.NUMBER, number, this.lineCounter, this.columnCounter))
         this.columnCounter += number.length
+    }
+
+    private handleChar() {
+        this.code.shift() // shift '
+
+        if (this.code.length === 0) {
+            logError(
+                this.lineCounter,
+                this.columnCounter + 2,
+                `Expected char`
+            )
+            Deno.exit(1)
+        }
+
+        const char = this.code.shift() as string
+
+        if (this.code[0] != "'") {
+            logError(
+                this.lineCounter,
+                this.columnCounter + 2,
+                `Expected '`
+            )
+            Deno.exit(1)
+        }
+
+        this.code.shift()// shift '
+
+        this.tokens.push(new Token(TokenType.CHAR, char, this.lineCounter, this.columnCounter))
+        this.columnCounter += 3
     }
 
     private handlerIdentifier() {

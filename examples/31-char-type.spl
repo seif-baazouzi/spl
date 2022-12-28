@@ -1,0 +1,12 @@
+let x: char = 'a'
+
+print 'H'
+print 'e'
+print 'l'
+print 'l'
+print 'o'
+print ' '
+print 'W'
+print 'o'
+print 'l'
+print 'd'

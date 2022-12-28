@@ -166,6 +166,32 @@ _print_boolean:
 
     ret
 
+_print_char:
+    push rax
+    push rdi
+    push rsi
+    push rdx
+
+    mov rax, [rsp+40]
+
+    push 0xa
+    push rax
+
+    mov rax, 1
+    mov rdi, 1
+    mov rsi, rsp
+    mov rdx, 9
+    syscall
+
+    add rsp, 16
+
+    pop rdx
+    pop rsi
+    pop rdi
+    pop rax
+
+    ret
+
 section .data
     true: db "true", 0xa
     trueLength equ $-true

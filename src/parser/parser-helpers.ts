@@ -10,6 +10,8 @@ export function getVariableType(type: Token): VariableType {
             return VariableType.UINT
         case "bool":
             return VariableType.BOOLEAN
+        case "char":
+            return VariableType.CHAR
         case "void":
             return VariableType.VOID
         default: {
