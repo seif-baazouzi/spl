@@ -66,6 +66,13 @@ export default function handleAssignVariable(statement: AssignVariable, env: Env
         default:
             return [
                 expression.assembly,
+                isMustFreeType(variable.type) ?
+                    [
+                        "push rax",
+                        "call _free",
+                        "add rsp, 8",
+                    ].join("\n")
+                    : "",
                 getOperationAssembly(statement.operation, variable.address),
             ].join("\n")
     }
@@ -108,4 +115,8 @@ function getOperationAssembly(operation: Token, variableAddress: number): string
             Deno.exit(1)
         }
     }
+}
+
+function isMustFreeType(type: VariableType): boolean {
+    return type === VariableType.STRING
 }

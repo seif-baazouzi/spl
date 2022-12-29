@@ -1,2 +1,15 @@
 let str: string = "Hello, World!"
 print str
+
+print "
+===================================
+"
+
+const a = "123"
+const b = "123"
+
+if a == b:
+    print "a is equal to b"
+else:
+    print "a is not equal to b"
+endif

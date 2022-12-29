@@ -198,21 +198,67 @@ _print_string:
     push rdi
     push rdx
 
-    mov rax, [rsp+8*5]
-
-    mov rdi, 1
-    mov rsi, pointer
-    add rsi, rax
-    add rsi, 8
-    mov rdx, [pointer+rax]
     mov rax, 1
-
-    syscall 
+    mov rdi, 1
+    mov rsi, [rsp+8*5]
+    add rsi, 8
+    mov rdx, [rsp+8*5]
+    mov rdx, [rdx]
+    syscall
 
     pop rdx
     pop rdi
     pop rsi
     pop rax
+
+    ret
+
+_compare_string:
+    push rax
+    push rsi
+    push rdi
+    push rdx
+    push rcx
+
+    mov rax, [rsp+8*6]
+    mov rdx, [rsp+8*7]
+
+    ; compare length
+    mov rsi, [rax]
+    mov rdi, [rdx]
+
+    cmp rsi, rdi
+    jne .false
+
+    ; compare the characters
+    mov rcx, rsi
+    
+    .compare:
+        cmp rcx, 0
+        jz .true
+
+        dec rcx
+        movzx rsi, byte [rax+rcx+8]
+        movzx rdi, byte [rdx+rcx+8]
+        
+        cmp rsi, rdi
+        jne .false
+        jmp .compare
+
+    .false:
+        xor rax, rax
+        jmp .end
+    
+    .true:
+        mov rax, 1
+
+    .end:
+    
+    pop rcx
+    pop rdx
+    pop rdi
+    pop rsi
+    add rsp, 8
 
     ret
 
@@ -227,11 +273,15 @@ _allocate:
     mov rcx, rax
     add rcx, rbx
     mov [counter], rcx
+    add rax, pointer
 
     pop rcx
     pop rbx
     add rsp, 8
 
+    ret
+
+_free:
     ret
 
 section .bss

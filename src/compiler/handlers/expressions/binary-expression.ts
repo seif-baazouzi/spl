@@ -1,5 +1,5 @@
 import { TokenType } from "~/lexer/lexer-types.ts"
-import { BinaryExpression } from "~/parser/parser-types.ts"
+import { BinaryExpression, VariableType } from "~/parser/parser-types.ts"
 import { getTokenPosition } from "~/compiler/compiler-helpers.ts"
 import { Environment, ExpressionValue } from "~/compiler/compiler-types.ts"
 import { handleExpression } from "~/compiler/handlers/expressions/expression.ts"
@@ -41,13 +41,21 @@ export function handleBinaryExpression(expression: BinaryExpression, env: Enviro
             break
         }
         case TokenType.EQUALS_TO: {
-            result.push("cmp rax, rbx")
-            result.push(`jz .true_${getTokenPosition(expression.operation)}`)
-            result.push("mov rax, 0")
-            result.push(`jmp .end_${getTokenPosition(expression.operation)}`)
-            result.push(`.true_${getTokenPosition(expression.operation)}:`)
-            result.push("mov rax, 1")
-            result.push(`.end_${getTokenPosition(expression.operation)}:`)
+            if (leftExpression.type === VariableType.STRING) {
+                result.push("push rax")
+                result.push("push rbx")
+                result.push("call _compare_string")
+                result.push("add rsp, 16")
+            } else {
+                result.push("cmp rax, rbx")
+                result.push(`jz .true_${getTokenPosition(expression.operation)}`)
+                result.push("mov rax, 0")
+                result.push(`jmp .end_${getTokenPosition(expression.operation)}`)
+                result.push(`.true_${getTokenPosition(expression.operation)}:`)
+                result.push("mov rax, 1")
+                result.push(`.end_${getTokenPosition(expression.operation)}:`)
+            }
+
             break
         }
         case TokenType.DEFERENT_TO: {

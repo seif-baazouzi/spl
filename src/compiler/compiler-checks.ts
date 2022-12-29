@@ -5,7 +5,28 @@ import typeToString from "~/utils/type-to-string.ts"
 
 export function checkBinaryExpression(operation: Token, leftType: VariableType, rightType: VariableType): VariableType {
     switch (operation.type) {
-        case TokenType.PLUS:
+        // deno-lint-ignore no-fallthrough
+        case TokenType.PLUS: {
+            if (isNumberType(leftType) && isNumberType(rightType)) {
+                if (leftType != rightType) {
+                    logError(
+                        operation.line,
+                        operation.colum,
+                        `Cannot do math operations ${typeToString(leftType)} and ${typeToString(rightType)}`
+                    )
+                    Deno.exit(1)
+                }
+
+                return leftType
+            }
+
+            logError(
+                operation.line,
+                operation.colum,
+                `Cannot do plus operations on ${typeToString(leftType)} and ${typeToString(rightType)}`
+            )
+            Deno.exit(1)
+        }
         case TokenType.MINUS:
         case TokenType.MULTIPLY:
         case TokenType.DIVIDE:
@@ -15,6 +36,15 @@ export function checkBinaryExpression(operation: Token, leftType: VariableType, 
                     operation.line,
                     operation.colum,
                     "Cannot do math operations on non number types"
+                )
+                Deno.exit(1)
+            }
+
+            if (leftType != rightType) {
+                logError(
+                    operation.line,
+                    operation.colum,
+                    `Cannot do math operations ${typeToString(leftType)} and ${typeToString(rightType)}`
                 )
                 Deno.exit(1)
             }
