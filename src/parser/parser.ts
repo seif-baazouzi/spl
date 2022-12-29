@@ -6,6 +6,7 @@ import {
     Boolean,
     BreakKeyword,
     Char,
+    String,
     ContinueKeyword,
     DeclareFunction,
     DeclareVariable,
@@ -627,6 +628,9 @@ export default class Parser {
             }
             case TokenType.CHAR: {
                 return new Char(this.eat())
+            }
+            case TokenType.STRING: {
+                return new String(this.eat())
             }
             case TokenType.TRUE: {
                 this.eat() // eat true

@@ -192,6 +192,52 @@ _print_char:
 
     ret
 
+_print_string:
+    push rax
+    push rsi
+    push rdi
+    push rdx
+
+    mov rax, [rsp+8*5]
+
+    mov rdi, 1
+    mov rsi, pointer
+    add rsi, rax
+    add rsi, 8
+    mov rdx, [pointer+rax]
+    mov rax, 1
+
+    syscall 
+
+    pop rdx
+    pop rdi
+    pop rsi
+    pop rax
+
+    ret
+
+_allocate:
+    push rax
+    push rbx
+    push rcx
+
+    mov rbx, [rsp+8*4]
+
+    mov rax, [counter]
+    mov rcx, rax
+    add rcx, rbx
+    mov [counter], rcx
+
+    pop rcx
+    pop rbx
+    add rsp, 8
+
+    ret
+
+section .bss
+    pointer: resb 680_000
+    counter: resb 8
+
 section .data
     true: db "true", 0xa
     trueLength equ $-true

@@ -16,6 +16,8 @@ function getPrintFunction(type: VariableType): string {
     switch (type) {
         case VariableType.BOOLEAN:
             return "_print_boolean"
+        case VariableType.STRING:
+            return "_print_string"
         case VariableType.CHAR:
             return "_print_char"
         case VariableType.INT:

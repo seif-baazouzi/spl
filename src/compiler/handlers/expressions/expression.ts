@@ -1,4 +1,4 @@
-import { AsExpression, BinaryExpression, Boolean, Char, Expression, FunctionCall, Identifier, NodeType, NotExpression, Numerical, SyscallExpression } from "~/parser/parser-types.ts"
+import { AsExpression, BinaryExpression, Boolean, Char, Expression, FunctionCall, Identifier, NodeType, NotExpression, Numerical, String, SyscallExpression } from "~/parser/parser-types.ts"
 import { VariableType } from "~/parser/parser-types.ts"
 import { ExpressionValue, Environment } from "~/compiler/compiler-types.ts"
 import { handleBinaryExpression } from "~/compiler/handlers/expressions/binary-expression.ts"
@@ -21,6 +21,22 @@ export function handleExpression(expression: Expression, env: Environment): Expr
             return {
                 type: VariableType.CHAR,
                 assembly: `mov rax, ${st.char.value.charCodeAt(0)}`,
+            }
+        }
+        case NodeType.STRING: {
+            const st = expression as String
+            return {
+                type: VariableType.STRING,
+                assembly: [
+                    `push ${st.str.value.length + 8}`,
+                    `call _allocate`,
+                    `add rsp, 8`,
+                    `mov rbx, ${st.str.value.length}`,
+                    `mov [pointer+rax], rbx`,
+                    ...st.str.value.split("").map((char, index) => {
+                        return `mov [pointer+rax+${8 + index}], byte ${char.charCodeAt(0)}`
+                    })
+                ].join("\n")
             }
         }
         case NodeType.BOOLEAN: {

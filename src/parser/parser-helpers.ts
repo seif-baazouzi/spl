@@ -12,6 +12,8 @@ export function getVariableType(type: Token): VariableType {
             return VariableType.BOOLEAN
         case "char":
             return VariableType.CHAR
+        case "string":
+            return VariableType.STRING
         case "void":
             return VariableType.VOID
         default: {

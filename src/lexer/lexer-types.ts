@@ -1,6 +1,7 @@
 export enum TokenType {
     NUMBER,
     CHAR,
+    STRING,
     IDENTIFIER,
 
     PLUS,

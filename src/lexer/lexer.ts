@@ -107,6 +107,12 @@ export default class Lexer {
             }
 
             // handle char
+            if (this.code[0] === `"`) {
+                this.handleString()
+                continue
+            }
+
+            // handle char
             if (this.code[0] === "'") {
                 this.handleChar()
                 continue
@@ -144,6 +150,37 @@ export default class Lexer {
         this.columnCounter += number.length
     }
 
+    private handleString() {
+        this.code.shift() // shift "
+        this.columnCounter++
+
+        const line = this.lineCounter
+        const column = this.columnCounter
+
+        let str = ""
+        while (this.code[0] != `"` && this.code.length != 0) {
+            if (this.code[0] === "\n") {
+                this.lineCounter++
+                this.columnCounter = 0
+            }
+            this.columnCounter++
+
+            str += this.code.shift()
+        }
+
+        if (this.code[0] != `"`) {
+            logError(
+                this.lineCounter,
+                this.columnCounter + 2,
+                `Expected closing "`
+            )
+            Deno.exit(1)
+        }
+        this.code.shift() // shift "
+
+        this.tokens.push(new Token(TokenType.STRING, str, line, column))
+    }
+
     private handleChar() {
         this.code.shift() // shift '
 
@@ -162,7 +199,7 @@ export default class Lexer {
             logError(
                 this.lineCounter,
                 this.columnCounter + 2,
-                `Expected '`
+                `Expected closing '`
             )
             Deno.exit(1)
         }

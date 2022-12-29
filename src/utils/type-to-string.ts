@@ -12,6 +12,8 @@ export default function typeToString(type: VariableType): string {
             return "void"
         case VariableType.BOOLEAN:
             return "boolean"
+        case VariableType.STRING:
+            return "string"
         default: {
             throw new Error("DEBUG: Invalid Variable Type")
         }
