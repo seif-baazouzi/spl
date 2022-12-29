@@ -59,13 +59,27 @@ export function handleBinaryExpression(expression: BinaryExpression, env: Enviro
             break
         }
         case TokenType.DEFERENT_TO: {
-            result.push("cmp rax, rbx")
-            result.push(`jz .false_${getTokenPosition(expression.operation)}`)
-            result.push("mov rax, 1")
-            result.push(`jmp .end_${getTokenPosition(expression.operation)}`)
-            result.push(`.false_${getTokenPosition(expression.operation)}:`)
-            result.push("mov rax, 0")
-            result.push(`.end_${getTokenPosition(expression.operation)}:`)
+            if (leftExpression.type === VariableType.STRING) {
+                result.push("push rax")
+                result.push("push rbx")
+                result.push("call _compare_string")
+                result.push("add rsp, 16")
+                result.push(`cmp rax, 0`)
+                result.push(`je .not_${getTokenPosition(expression.operation)}`)
+                result.push(`xor rax, rax`)
+                result.push(`jmp .not_end_${getTokenPosition(expression.operation)}`)
+                result.push(`.not_${getTokenPosition(expression.operation)}:`)
+                result.push(`mov rax, 1`)
+                result.push(`.not_end_${getTokenPosition(expression.operation)}:`)
+            } else {
+                result.push("cmp rax, rbx")
+                result.push(`jz .false_${getTokenPosition(expression.operation)}`)
+                result.push("mov rax, 1")
+                result.push(`jmp .end_${getTokenPosition(expression.operation)}`)
+                result.push(`.false_${getTokenPosition(expression.operation)}:`)
+                result.push("mov rax, 0")
+                result.push(`.end_${getTokenPosition(expression.operation)}:`)
+            }
             break
         }
         case TokenType.GRATER_THEN: {

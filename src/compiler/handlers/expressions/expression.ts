@@ -25,13 +25,10 @@ export function handleExpression(expression: Expression, env: Environment): Expr
         }
         case NodeType.STRING: {
             const st = expression as String
-            let allocate = st.str.value.length
-            while (allocate % 8 != 0) allocate++
-
             return {
                 type: VariableType.STRING,
                 assembly: [
-                    `push ${allocate + 8}`,
+                    `push ${st.str.value.length + 8}`,
                     `call _allocate`,
                     `add rsp, 8`,
                     `mov rbx, ${st.str.value.length}`,
